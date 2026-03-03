@@ -1,23 +1,23 @@
 /**
  * Budgets Page
- * Page for managing couple budgets - REAL DATA from Supabase
- * 
- * DATABASE SCHEMA NOTES:
- * - Uses 'created_by' column (NOT 'user_id')
- * - Has 'spent' numeric field for tracking expenses
- * - Has 'year' field for budget year
+ * Page for managing couple budgets.
+ *
+ * Phase 6: Now uses IBudgetService via ServiceContext (Clean Architecture).
+ * NO direct supabase calls.
  */
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Wallet, TrendingUp, TrendingDown, AlertCircle, X, Loader2, DollarSign } from 'lucide-react';
+import { Plus, Wallet, TrendingUp, TrendingDown, AlertCircle, X, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { useServices } from '../../contexts/ServiceContext';
 import { Budget } from '../../types';
 
 export const BudgetsPage: React.FC = () => {
   const { t } = useTranslation();
   const { user, partner } = useAuth();
+  const { budgetService } = useServices();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,24 +42,8 @@ export const BudgetsPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
 
-      const userIds = [user?.id];
-      if (partner?.id) {
-        userIds.push(partner.id);
-      }
-
-      // Uses 'created_by' column (NOT 'user_id')
-      const { data, error: fetchError } = await supabase
-        .from('budgets')
-        .select('*')
-        .or(userIds.map(id => `created_by.eq.${id}`).join(','))
-        .order('created_at', { ascending: false });
-
-      if (fetchError) {
-        console.error('Error fetching budgets:', fetchError);
-        setError(t('errors.generic'));
-      } else {
-        setBudgets(data || []);
-      }
+      const data = await budgetService.getAll(user!.id, partner?.id);
+      setBudgets(data);
     } catch (err) {
       console.error('Error loading budgets:', err);
       setError(t('errors.generic'));
@@ -74,24 +58,16 @@ export const BudgetsPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // Uses 'created_by' column (NOT 'user_id')
-      const { error: insertError } = await supabase
-        .from('budgets')
-        .insert({
-          category: newBudget.category,
-          amount: parseFloat(newBudget.amount),
-          spent: parseFloat(newBudget.spent) || 0,
-          created_by: user.id,
-        });
+      await budgetService.create({
+        category: newBudget.category,
+        amount: parseFloat(newBudget.amount),
+        spent: parseFloat(newBudget.spent) || 0,
+        userId: user.id,
+      });
 
-      if (insertError) {
-        console.error('Error adding budget:', insertError);
-        setError(t('errors.generic'));
-      } else {
-        setNewBudget({ category: '', amount: '', spent: '0' });
-        setIsModalOpen(false);
-        loadBudgets();
-      }
+      setNewBudget({ category: '', amount: '', spent: '0' });
+      setIsModalOpen(false);
+      loadBudgets();
     } catch (err) {
       console.error('Error adding budget:', err);
       setError(t('errors.generic'));
@@ -102,17 +78,8 @@ export const BudgetsPage: React.FC = () => {
 
   const handleUpdateSpent = async (budgetId: string, newSpent: number) => {
     try {
-      const { error: updateError } = await supabase
-        .from('budgets')
-        .update({ spent: newSpent })
-        .eq('id', budgetId);
-
-      if (updateError) {
-        console.error('Error updating budget:', updateError);
-        setError(t('errors.generic'));
-      } else {
-        loadBudgets();
-      }
+      await budgetService.updateSpent(budgetId, newSpent);
+      loadBudgets();
     } catch (err) {
       console.error('Error updating budget:', err);
       setError(t('errors.generic'));
@@ -121,17 +88,8 @@ export const BudgetsPage: React.FC = () => {
 
   const handleDeleteBudget = async (budgetId: string) => {
     try {
-      const { error: deleteError } = await supabase
-        .from('budgets')
-        .delete()
-        .eq('id', budgetId);
-
-      if (deleteError) {
-        console.error('Error deleting budget:', deleteError);
-        setError(t('errors.generic'));
-      } else {
-        loadBudgets();
-      }
+      await budgetService.delete(budgetId);
+      loadBudgets();
     } catch (err) {
       console.error('Error deleting budget:', err);
       setError(t('errors.generic'));
@@ -358,7 +316,7 @@ export const BudgetsPage: React.FC = () => {
                   value={newBudget.category}
                   onChange={(e) => setNewBudget({ ...newBudget, category: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  placeholder={t('budgets.groceries')}
+                  placeholder={t('budgets.categoryPlaceholder')}
                   required
                 />
               </div>
@@ -367,37 +325,31 @@ export const BudgetsPage: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('budgets.amount')}
                 </label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="number"
-                    value={newBudget.amount}
-                    onChange={(e) => setNewBudget({ ...newBudget, amount: e.target.value })}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </div>
+                <input
+                  type="number"
+                  value={newBudget.amount}
+                  onChange={(e) => setNewBudget({ ...newBudget, amount: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  required
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('budgets.spent')} ({t('common.optional')})
+                  {t('budgets.spentSoFar')}
                 </label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="number"
-                    value={newBudget.spent}
-                    onChange={(e) => setNewBudget({ ...newBudget, spent: e.target.value })}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
+                <input
+                  type="number"
+                  value={newBudget.spent}
+                  onChange={(e) => setNewBudget({ ...newBudget, spent: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                />
               </div>
 
               <div className="flex gap-3 pt-4">

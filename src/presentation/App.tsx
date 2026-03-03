@@ -7,6 +7,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '../design-system/components/ThemeProvider';
 import { AuthProvider } from '../contexts/AuthContext';
+import { ServiceProvider } from '../contexts/ServiceContext';
+import { container } from '../infrastructure/container';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -25,6 +27,7 @@ export const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <ServiceProvider services={container}>
         <Router>
           <Routes>
             {/* Public Routes */}
@@ -51,6 +54,7 @@ export const App: React.FC = () => {
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Router>
+        </ServiceProvider>
       </AuthProvider>
     </ThemeProvider>
   );

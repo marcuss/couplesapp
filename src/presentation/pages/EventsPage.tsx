@@ -1,16 +1,21 @@
 /**
  * Events Page
- * Page for managing couple events - REAL DATA from Supabase
+ * Page for managing couple events.
+ *
+ * Phase 6: Now uses IEventService via ServiceContext (Clean Architecture).
+ * NO direct supabase calls.
  */
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Calendar, Clock, MapPin, ChevronLeft, ChevronRight, Loader2, AlertCircle, X } from 'lucide-react';
+import { Plus, Calendar, Clock, ChevronLeft, ChevronRight, Loader2, AlertCircle, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { useServices } from '../../contexts/ServiceContext';
 import { CalendarEvent } from '../../types';
 
 export const EventsPage: React.FC = () => {
   const { user, partner } = useAuth();
+  const { eventService } = useServices();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -37,23 +42,8 @@ export const EventsPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
 
-      const userIds = [user?.id];
-      if (partner?.id) {
-        userIds.push(partner.id);
-      }
-
-      const { data, error: fetchError } = await supabase
-        .from('events')
-        .select('*')
-        .or(userIds.map(id => `user_id.eq.${id}`).join(','))
-        .order('date', { ascending: true });
-
-      if (fetchError) {
-        console.error('Error fetching events:', fetchError);
-        setError('Error al cargar eventos');
-      } else {
-        setEvents(data || []);
-      }
+      const data = await eventService.getAll(user!.id, partner?.id);
+      setEvents(data);
     } catch (err) {
       console.error('Error loading events:', err);
       setError('Error al cargar eventos');
@@ -68,24 +58,17 @@ export const EventsPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const { error: insertError } = await supabase
-        .from('events')
-        .insert({
-          title: newEvent.title,
-          description: newEvent.description || null,
-          date: newEvent.date,
-          time: newEvent.time || null,
-          user_id: user.id,
-        });
+      await eventService.create({
+        title: newEvent.title,
+        description: newEvent.description || undefined,
+        date: newEvent.date,
+        time: newEvent.time || undefined,
+        userId: user.id,
+      });
 
-      if (insertError) {
-        console.error('Error adding event:', insertError);
-        setError('Error al agregar evento');
-      } else {
-        setNewEvent({ title: '', description: '', date: '', time: '' });
-        setIsModalOpen(false);
-        loadEvents();
-      }
+      setNewEvent({ title: '', description: '', date: '', time: '' });
+      setIsModalOpen(false);
+      loadEvents();
     } catch (err) {
       console.error('Error adding event:', err);
       setError('Error al agregar evento');
@@ -96,17 +79,8 @@ export const EventsPage: React.FC = () => {
 
   const handleDeleteEvent = async (eventId: string) => {
     try {
-      const { error: deleteError } = await supabase
-        .from('events')
-        .delete()
-        .eq('id', eventId);
-
-      if (deleteError) {
-        console.error('Error deleting event:', deleteError);
-        setError('Error al eliminar evento');
-      } else {
-        loadEvents();
-      }
+      await eventService.delete(eventId);
+      loadEvents();
     } catch (err) {
       console.error('Error deleting event:', err);
       setError('Error al eliminar evento');

@@ -1,12 +1,9 @@
 /**
  * Dashboard Page
- * Main dashboard showing overview of couple's activities - REAL DATA from Supabase
- * 
- * DATABASE SCHEMA NOTES:
- * - events: uses 'user_id' column
- * - goals: uses 'created_by' column (NOT 'user_id'), uses 'completed' boolean (NOT 'status')
- * - budgets: uses 'created_by' column (NOT 'user_id')
- * - tasks: uses 'created_by' column (NOT 'user_id'), uses 'completed' boolean (NOT 'status')
+ * Main dashboard showing overview of couple's activities.
+ *
+ * Phase 6: Now uses IDashboardService via ServiceContext (Clean Architecture).
+ * NO direct supabase calls.
  */
 
 import React, { useEffect, useState } from 'react';
@@ -26,7 +23,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { useServices } from '../../contexts/ServiceContext';
 import { CalendarEvent, Goal, Budget, Task } from '../../types';
 
 interface DashboardStats {
@@ -40,6 +37,8 @@ interface DashboardStats {
 export const DashboardPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { user, partner } = useAuth();
+  const { dashboardService } = useServices();
+
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [budgets, setBudgets] = useState<Budget[]>([]);
@@ -58,66 +57,15 @@ export const DashboardPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
 
-      const userIds = [user?.id];
-      if (partner?.id) {
-        userIds.push(partner.id);
-      }
+      const data = await dashboardService.loadData(
+        user!.id,
+        partner?.id
+      );
 
-      // Fetch events - uses 'user_id' column
-      const { data: eventsData, error: eventsError } = await supabase
-        .from('events')
-        .select('*')
-        .or(userIds.map(id => `user_id.eq.${id}`).join(','))
-        .order('date', { ascending: true });
-
-      if (eventsError) {
-        console.error('Error fetching events:', eventsError);
-        setError(t('errors.generic'));
-      } else {
-        setEvents(eventsData || []);
-      }
-
-      // Fetch goals - uses 'created_by' column (NOT 'user_id'), uses 'completed' boolean (NOT 'status')
-      const { data: goalsData, error: goalsError } = await supabase
-        .from('goals')
-        .select('*')
-        .or(userIds.map(id => `created_by.eq.${id}`).join(','))
-        .eq('completed', false)
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      if (goalsError) {
-        console.error('Error fetching goals:', goalsError);
-      } else {
-        setGoals(goalsData || []);
-      }
-
-      // Fetch budgets - uses 'created_by' column (NOT 'user_id')
-      const { data: budgetsData, error: budgetsError } = await supabase
-        .from('budgets')
-        .select('*')
-        .or(userIds.map(id => `created_by.eq.${id}`).join(','));
-
-      if (budgetsError) {
-        console.error('Error fetching budgets:', budgetsError);
-      } else {
-        setBudgets(budgetsData || []);
-      }
-
-      // Fetch tasks - uses 'created_by' column (NOT 'user_id'), uses 'completed' boolean (NOT 'status')
-      const { data: tasksData, error: tasksError } = await supabase
-        .from('tasks')
-        .select('*')
-        .or(userIds.map(id => `created_by.eq.${id}`).join(','))
-        .eq('completed', false)
-        .order('due_date', { ascending: true })
-        .limit(5);
-
-      if (tasksError) {
-        console.error('Error fetching tasks:', tasksError);
-      } else {
-        setTasks(tasksData || []);
-      }
+      setEvents(data.events);
+      setGoals(data.goals);
+      setBudgets(data.budgets);
+      setTasks(data.tasks);
     } catch (err) {
       console.error('Error loading dashboard data:', err);
       setError(t('errors.generic'));
@@ -126,7 +74,7 @@ export const DashboardPage: React.FC = () => {
     }
   };
 
-  // Calculate stats from REAL data
+  // Calculate stats from data
   const stats: DashboardStats = {
     totalEvents: events.length,
     activeGoals: goals.length,

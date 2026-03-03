@@ -1,22 +1,23 @@
 /**
  * Goals Page
- * Page for managing couple goals - REAL DATA from Supabase
- * 
- * DATABASE SCHEMA NOTES:
- * - Uses 'created_by' column (NOT 'user_id')
- * - Uses 'completed' boolean (NOT 'status' text)
+ * Page for managing couple goals.
+ *
+ * Phase 6: Now uses IGoalService via ServiceContext (Clean Architecture).
+ * NO direct supabase calls.
  */
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Target, Calendar, CheckCircle2, Circle, X, Loader2, AlertCircle, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { useServices } from '../../contexts/ServiceContext';
 import { Goal } from '../../types';
 
 export const GoalsPage: React.FC = () => {
   const { t } = useTranslation();
   const { user, partner } = useAuth();
+  const { goalService } = useServices();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,24 +42,8 @@ export const GoalsPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
 
-      const userIds = [user?.id];
-      if (partner?.id) {
-        userIds.push(partner.id);
-      }
-
-      // Uses 'created_by' column (NOT 'user_id')
-      const { data, error: fetchError } = await supabase
-        .from('goals')
-        .select('*')
-        .or(userIds.map(id => `created_by.eq.${id}`).join(','))
-        .order('created_at', { ascending: false });
-
-      if (fetchError) {
-        console.error('Error fetching goals:', fetchError);
-        setError(t('errors.generic'));
-      } else {
-        setGoals(data || []);
-      }
+      const data = await goalService.getAll(user!.id, partner?.id);
+      setGoals(data);
     } catch (err) {
       console.error('Error loading goals:', err);
       setError(t('errors.generic'));
@@ -73,26 +58,16 @@ export const GoalsPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // Uses 'created_by' column (NOT 'user_id')
-      // Uses 'completed' boolean (NOT 'status' text)
-      const { error: insertError } = await supabase
-        .from('goals')
-        .insert({
-          title: newGoal.title,
-          description: newGoal.description || null,
-          target_date: newGoal.target_date || null,
-          completed: false,
-          created_by: user.id,
-        });
+      await goalService.create({
+        title: newGoal.title,
+        description: newGoal.description || undefined,
+        target_date: newGoal.target_date || undefined,
+        userId: user.id,
+      });
 
-      if (insertError) {
-        console.error('Error adding goal:', insertError);
-        setError(t('errors.generic'));
-      } else {
-        setNewGoal({ title: '', description: '', target_date: '' });
-        setIsModalOpen(false);
-        loadGoals();
-      }
+      setNewGoal({ title: '', description: '', target_date: '' });
+      setIsModalOpen(false);
+      loadGoals();
     } catch (err) {
       console.error('Error adding goal:', err);
       setError(t('errors.generic'));
@@ -103,18 +78,8 @@ export const GoalsPage: React.FC = () => {
 
   const handleCompleteGoal = async (goalId: string) => {
     try {
-      // Uses 'completed' boolean (NOT 'status' text)
-      const { error: updateError } = await supabase
-        .from('goals')
-        .update({ completed: true })
-        .eq('id', goalId);
-
-      if (updateError) {
-        console.error('Error completing goal:', updateError);
-        setError(t('errors.generic'));
-      } else {
-        loadGoals();
-      }
+      await goalService.complete(goalId);
+      loadGoals();
     } catch (err) {
       console.error('Error completing goal:', err);
       setError(t('errors.generic'));
@@ -123,24 +88,14 @@ export const GoalsPage: React.FC = () => {
 
   const handleDeleteGoal = async (goalId: string) => {
     try {
-      const { error: deleteError } = await supabase
-        .from('goals')
-        .delete()
-        .eq('id', goalId);
-
-      if (deleteError) {
-        console.error('Error deleting goal:', deleteError);
-        setError(t('errors.generic'));
-      } else {
-        loadGoals();
-      }
+      await goalService.delete(goalId);
+      loadGoals();
     } catch (err) {
       console.error('Error deleting goal:', err);
       setError(t('errors.generic'));
     }
   };
 
-  // Uses 'completed' boolean (NOT 'status' text)
   const activeGoals = goals.filter(g => !g.completed);
   const completedGoals = goals.filter(g => g.completed);
 

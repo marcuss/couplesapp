@@ -1,23 +1,23 @@
 /**
  * Tasks Page
- * Page for managing couple tasks - REAL DATA from Supabase
- * 
- * DATABASE SCHEMA NOTES:
- * - Uses 'created_by' column (NOT 'user_id')
- * - Uses 'completed' boolean (NOT 'status' text)
- * - Has 'assigned_to' for task assignment
+ * Page for managing couple tasks.
+ *
+ * Phase 6: Now uses ITaskService via ServiceContext (Clean Architecture).
+ * NO direct supabase calls.
  */
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, CheckSquare, Calendar, CheckCircle2, Circle, X, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { useServices } from '../../contexts/ServiceContext';
 import { Task } from '../../types';
 
 export const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const { user, partner } = useAuth();
+  const { taskService } = useServices();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,24 +42,8 @@ export const TasksPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
 
-      const userIds = [user?.id];
-      if (partner?.id) {
-        userIds.push(partner.id);
-      }
-
-      // Uses 'created_by' column (NOT 'user_id')
-      const { data, error: fetchError } = await supabase
-        .from('tasks')
-        .select('*')
-        .or(userIds.map(id => `created_by.eq.${id}`).join(','))
-        .order('due_date', { ascending: true });
-
-      if (fetchError) {
-        console.error('Error fetching tasks:', fetchError);
-        setError(t('errors.generic'));
-      } else {
-        setTasks(data || []);
-      }
+      const data = await taskService.getAll(user!.id, partner?.id);
+      setTasks(data);
     } catch (err) {
       console.error('Error loading tasks:', err);
       setError(t('errors.generic'));
@@ -74,26 +58,16 @@ export const TasksPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // Uses 'created_by' column (NOT 'user_id')
-      // Uses 'completed' boolean (NOT 'status' text)
-      const { error: insertError } = await supabase
-        .from('tasks')
-        .insert({
-          title: newTask.title,
-          description: newTask.description || null,
-          due_date: newTask.due_date || null,
-          completed: false,
-          created_by: user.id,
-        });
+      await taskService.create({
+        title: newTask.title,
+        description: newTask.description || undefined,
+        due_date: newTask.due_date || undefined,
+        userId: user.id,
+      });
 
-      if (insertError) {
-        console.error('Error adding task:', insertError);
-        setError(t('errors.generic'));
-      } else {
-        setNewTask({ title: '', description: '', due_date: '' });
-        setIsModalOpen(false);
-        loadTasks();
-      }
+      setNewTask({ title: '', description: '', due_date: '' });
+      setIsModalOpen(false);
+      loadTasks();
     } catch (err) {
       console.error('Error adding task:', err);
       setError(t('errors.generic'));
@@ -104,18 +78,8 @@ export const TasksPage: React.FC = () => {
 
   const handleToggleComplete = async (taskId: string, currentCompleted: boolean) => {
     try {
-      // Uses 'completed' boolean (NOT 'status' text)
-      const { error: updateError } = await supabase
-        .from('tasks')
-        .update({ completed: !currentCompleted })
-        .eq('id', taskId);
-
-      if (updateError) {
-        console.error('Error updating task:', updateError);
-        setError(t('errors.generic'));
-      } else {
-        loadTasks();
-      }
+      await taskService.toggleComplete(taskId, currentCompleted);
+      loadTasks();
     } catch (err) {
       console.error('Error updating task:', err);
       setError(t('errors.generic'));
@@ -124,24 +88,14 @@ export const TasksPage: React.FC = () => {
 
   const handleDeleteTask = async (taskId: string) => {
     try {
-      const { error: deleteError } = await supabase
-        .from('tasks')
-        .delete()
-        .eq('id', taskId);
-
-      if (deleteError) {
-        console.error('Error deleting task:', deleteError);
-        setError(t('errors.generic'));
-      } else {
-        loadTasks();
-      }
+      await taskService.delete(taskId);
+      loadTasks();
     } catch (err) {
       console.error('Error deleting task:', err);
       setError(t('errors.generic'));
     }
   };
 
-  // Uses 'completed' boolean (NOT 'status' text)
   const pendingTasks = tasks.filter(t => !t.completed);
   const completedTasks = tasks.filter(t => t.completed);
 
