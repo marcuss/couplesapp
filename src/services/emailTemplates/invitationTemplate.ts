@@ -1,15 +1,13 @@
 /**
  * Invitation Email Template — CouplePlan
  *
- * Paleta extraída del screenshot real de la app (dark navy mode):
- *   - Body bg:    #131929  (dark navy profundo)
- *   - Card bg:    #1e2640  (navy ligeramente más claro)
- *   - Input/sec:  #252f4a  (elementos internos)
- *   - Brand:      #f43f5e  (rose-500 — ícono corazón + texto brand)
- *   - Button:     #f43f5e  (sólido, sin gradiente exagerado)
- *   - Text:       #ffffff  (encabezados)
- *   - Muted:      #8b95b0  (texto secundario)
- *   - Border:     #2d3a55  (bordes sutiles)
+ * Diseñado para light mode (default en clientes de email móvil).
+ * Paleta alineada con el look & feel de la app en light mode:
+ *   - Fondo: rose-50 muy sutil (#fdf2f8) — mismo que el login
+ *   - Card: blanco con sombra y border-radius generoso
+ *   - Franja top: gradiente rose-500 → pink-500 (4px sutil)
+ *   - Acento: rose-500 (#f43f5e) SOLO como franja/botón, no como fondo masivo
+ *   - Texto: gray-900 / gray-600 — legible y elegante
  */
 
 export interface InvitationTemplateParams {
@@ -32,88 +30,84 @@ export function buildInvitationHtml(params: InvitationTemplateParams): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invitación a CouplePlan</title>
-  <!--[if mso]>
-  <noscript>
-    <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
-  </noscript>
-  <![endif]-->
 </head>
-<body style="margin:0;padding:0;background-color:#131929;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+<body style="margin:0;padding:0;background-color:#fdf2f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
 
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#131929;min-width:100%;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#fdf2f8;">
     <tr>
-      <td align="center" style="padding:40px 16px 40px;background-color:#131929;">
+      <td align="center" style="padding:40px 16px 32px;">
 
-        <!-- Brand header -->
-        <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+        <!-- Logo / Brand -->
+        <table cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:24px;">
           <tr>
             <td align="center">
-              <!-- Corazón SVG inline — igual al ícono de la app -->
-              <div style="margin-bottom:12px;">
-                <img src="https://img.icons8.com/ios/50/f43f5e/heart-outline--v1.png" width="40" height="40" alt="💕" style="display:block;margin:0 auto;">
-              </div>
-              <span style="font-size:22px;font-weight:800;color:#f43f5e;letter-spacing:-0.3px;">CouplePlan</span>
+              <div style="width:48px;height:48px;background:#fff0f3;border-radius:14px;display:inline-block;line-height:48px;font-size:26px;text-align:center;margin-bottom:10px;">💕</div>
+              <br>
+              <span style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-0.5px;">CouplePlan</span>
             </td>
           </tr>
         </table>
 
         <!-- Card principal -->
-        <table width="100%" cellpadding="0" cellspacing="0" border="0"
-               style="max-width:420px;background-color:#1e2640;border-radius:18px;overflow:hidden;border:1px solid #2d3a55;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+               style="max-width:460px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);border:1px solid #fce7f3;">
+
+          <!-- Franja de color top — sutil, no agresiva -->
+          <tr>
+            <td style="height:4px;background:linear-gradient(90deg,#f43f5e,#ec4899);font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
 
           <!-- Cuerpo -->
           <tr>
-            <td style="padding:32px 28px 28px;background-color:#1e2640;">
+            <td style="padding:32px 32px 28px;">
 
-              <!-- Título -->
-              <h2 style="color:#ffffff;font-size:22px;font-weight:700;margin:0 0 10px;line-height:1.3;text-align:center;">
-                Welcome Back
+              <!-- Saludo -->
+              <h2 style="color:#111827;font-size:20px;font-weight:700;margin:0 0 12px;line-height:1.3;">
+                ¡Tienes una invitación!
               </h2>
-              <p style="color:#8b95b0;font-size:14px;line-height:1.6;margin:0 0 28px;text-align:center;">
+              <p style="color:#4b5563;font-size:15px;line-height:1.7;margin:0 0 28px;">
                 <span style="color:#f43f5e;font-weight:600;">${inviterName}</span>
-                te invitó a planificar juntos
+                te invitó a unirte a <strong style="color:#111827;">CouplePlan</strong>
+                para planificar juntos metas, eventos, presupuestos y viajes.
               </p>
 
-              <!-- Divisor -->
-              <div style="height:1px;background-color:#2d3a55;margin-bottom:24px;"></div>
-
               <!-- Features -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                     style="background-color:#252f4a;border-radius:12px;margin-bottom:24px;border:1px solid #2d3a55;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                     style="background:#fdf2f8;border-radius:12px;border:1px solid #fce7f3;margin-bottom:28px;">
                 <tr>
-                  <td style="padding:16px 20px 12px;">
-                    <p style="color:#f43f5e;font-size:10px;font-weight:700;margin:0 0 12px;text-transform:uppercase;letter-spacing:1.2px;">Con CouplePlan pueden:</p>
+                  <td style="padding:18px 20px 14px;">
+                    <p style="color:#9f1239;font-size:10px;font-weight:700;margin:0 0 12px;text-transform:uppercase;letter-spacing:1.2px;">Con CouplePlan pueden:</p>
                     <table width="100%" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td width="50%" style="padding-bottom:8px;color:#c5cce0;font-size:13px;">📅 Calendarios</td>
-                        <td width="50%" style="padding-bottom:8px;color:#c5cce0;font-size:13px;">🎯 Metas juntos</td>
+                        <td width="50%" style="padding-bottom:8px;color:#374151;font-size:13px;">📅 Calendarios compartidos</td>
+                        <td width="50%" style="padding-bottom:8px;color:#374151;font-size:13px;">🎯 Metas anuales</td>
                       </tr>
                       <tr>
-                        <td width="50%" style="padding-bottom:8px;color:#c5cce0;font-size:13px;">💰 Presupuestos</td>
-                        <td width="50%" style="padding-bottom:8px;color:#c5cce0;font-size:13px;">✈️ Viajes</td>
+                        <td width="50%" style="padding-bottom:8px;color:#374151;font-size:13px;">💰 Presupuestos</td>
+                        <td width="50%" style="padding-bottom:8px;color:#374151;font-size:13px;">✈️ Viajes juntos</td>
                       </tr>
                       <tr>
-                        <td colspan="2" style="color:#c5cce0;font-size:13px;">✅ Tareas compartidas</td>
+                        <td colspan="2" style="color:#374151;font-size:13px;">✅ División de tareas</td>
                       </tr>
                     </table>
                   </td>
                 </tr>
               </table>
 
-              <!-- CTA Button — igual al botón Login de la app -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;">
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
-                  <td align="center">
+                  <td align="center" style="padding-bottom:20px;">
                     <a href="${invitationUrl}"
-                       style="display:block;background-color:#f43f5e;color:#ffffff;text-decoration:none;padding:16px 24px;border-radius:10px;font-size:16px;font-weight:700;text-align:center;letter-spacing:0.2px;">
-                      Aceptar invitación
+                       style="display:inline-block;background:#f43f5e;color:#ffffff;text-decoration:none;padding:15px 36px;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:0.2px;">
+                      Aceptar invitación →
                     </a>
                   </td>
                 </tr>
               </table>
 
               <!-- Link alternativo -->
-              <p style="color:#5a6480;font-size:11px;text-align:center;margin:0 0 4px;">¿No funciona el botón?</p>
+              <p style="color:#9ca3af;font-size:11px;text-align:center;margin:0 0 4px;">¿No funciona el botón? Copia este enlace:</p>
               <p style="text-align:center;margin:0;">
                 <a href="${invitationUrl}" style="color:#f43f5e;font-size:11px;word-break:break-all;text-decoration:none;">${invitationUrl}</a>
               </p>
@@ -121,11 +115,12 @@ export function buildInvitationHtml(params: InvitationTemplateParams): string {
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- Footer de la card -->
           <tr>
-            <td style="padding:14px 28px;background-color:#161e35;border-top:1px solid #2d3a55;">
-              <p style="color:#3d4d6e;font-size:11px;text-align:center;margin:0;">
-                CouplePlan &bull; ${currentDate} &bull; Ignora este correo si no lo esperabas
+            <td style="padding:16px 32px;background:#fafafa;border-top:1px solid #f3f4f6;">
+              <p style="color:#9ca3af;font-size:11px;text-align:center;margin:0;">
+                <strong style="color:#f43f5e;">CouplePlan</strong> &bull; ${currentDate}
+                &bull; Si no esperabas esta invitación, ignórala.
               </p>
             </td>
           </tr>
