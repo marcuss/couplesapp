@@ -30,6 +30,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@capacitor/geolocation': path.resolve(
+        __dirname,
+        './src/test/stubs/capacitor-geolocation.ts'
+      ),
     },
   },
 });
