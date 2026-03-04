@@ -2,7 +2,7 @@ name: E2E Nightly
 
 on:
   schedule:
-    - cron: '0 7 * * *'
+    - cron: '0 7 * * *'   # 7 AM UTC = 2 AM COT
   workflow_dispatch:
     inputs:
       branch:
@@ -17,8 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
-    outputs:
-      chromium_result: ${{ steps.run-tests.outputs.result }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,37 +37,26 @@ jobs:
 
       - name: Run E2E tests (${{ matrix.browser }})
         id: run-tests
-        run: |
-          npx playwright test --project=${{ matrix.browser }} --reporter=html,github
-          echo "result=passed" >> $GITHUB_OUTPUT
+        run: npx playwright test --project=${{ matrix.browser }} --reporter=html,github
         continue-on-error: true
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:5173' }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      - name: Upload report to S3 (only on failure)
+      - name: Upload report to S3 (on failure)
         if: steps.run-tests.outcome == 'failure'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
         run: |
-          REPORT_KEY="e2e-reports/$(date +%Y-%m-%d)/${{ matrix.browser }}"
-          aws s3 sync playwright-report/ s3://couplesapp-dev-frontend/$REPORT_KEY/ \
+          DATE=$(date +%Y-%m-%d)
+          REPORT_PATH="${DATE}/${{ matrix.browser }}"
+          aws s3 sync playwright-report/ \
+            s3://couplesapp-e2e-reports/${REPORT_PATH}/ \
             --cache-control "max-age=86400"
-          REPORT_URL="https://dlr56cmovhfn0.cloudfront.net/$REPORT_KEY/index.html"
-          echo "REPORT_URL=$REPORT_URL" >> $GITHUB_ENV
-          echo "report_url=$REPORT_URL" >> $GITHUB_OUTPUT
-
-      - name: Notify via OpenClaw webhook (only on failure)
-        if: steps.run-tests.outcome == 'failure'
-        run: |
-          curl -s -X POST "${{ secrets.OPENCLAW_WEBHOOK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"text\": \"❌ *E2E Nightly Failed* — ${{ matrix.browser }}\\n📅 $(date +%Y-%m-%d)\\n🔗 Ver reporte: ${{ env.REPORT_URL }}\\n🔗 GHA Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
-            }" || true
+          echo "REPORT_URL=http://couplesapp-e2e-reports.s3-website-us-east-1.amazonaws.com/${REPORT_PATH}/index.html" >> $GITHUB_ENV
 
       - name: Fail job if tests failed
         if: steps.run-tests.outcome == 'failure'
