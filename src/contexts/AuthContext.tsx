@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { User } from '../types';
 import { supabase } from '../lib/supabase';
-import { sendInvitationEmail } from '../services/emailService';
+import { sendInvitationEmail } from '../services/sesEmailService';
 
 interface AuthContextType {
   user: User | null;
