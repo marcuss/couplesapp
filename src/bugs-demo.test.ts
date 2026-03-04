@@ -61,7 +61,8 @@ describe('✅ BUG 2 FIXED: Dashboard Events Now Showing for Today', () => {
 
   it('FIXED - comparación de fechas usa string YYYY-MM-DD directamente', () => {
     // El fix: comparar strings en lugar de componentes individuales de Date
-    const today = new Date('2024-01-15T22:00:00-05:00'); // 10 PM EST
+    // Usamos noon UTC para que la fecha sea 2024-01-15 en cualquier timezone (incluido CI/UTC)
+    const today = new Date('2024-01-15T12:00:00Z'); // noon UTC — Jan 15 en todos los timezones
     vi.setSystemTime(today);
 
     // Función CORREGIDA: construye string local YYYY-MM-DD
