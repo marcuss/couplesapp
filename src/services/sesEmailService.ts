@@ -53,32 +53,92 @@ export async function sendInvitationEmail(params: InvitationEmailParams): Promis
   // Cuando el dominio nextasy.co esté verificado: cambiar a couplesapp-noreply@nextasy.co
   const fromEmail = import.meta.env.VITE_SES_FROM_EMAIL || 'm4rkuz@gmail.com';
 
-  const htmlBody = `
-    <!DOCTYPE html>
-    <html>
-      <head><meta charset="utf-8"></head>
-      <body style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #f43f5e;">💑 CouplePlan</h1>
-        </div>
-        <h2>¡Tienes una invitación de ${inviterName}!</h2>
-        <p>${inviterName} te ha invitado a unirte a CouplePlan para planificar juntos su año.</p>
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${invitationUrl}"
-             style="background-color: #f43f5e; color: white; padding: 14px 28px;
-                    text-decoration: none; border-radius: 8px; font-size: 16px;">
-            Aceptar invitación
-          </a>
-        </div>
-        <p style="color: #666; font-size: 14px;">
-          Si no esperabas esta invitación, puedes ignorar este correo.
-        </p>
-        <p style="color: #666; font-size: 14px;">
-          O copia este enlace: <a href="${invitationUrl}">${invitationUrl}</a>
-        </p>
-      </body>
-    </html>
-  `;
+  const currentDate = new Date().toLocaleDateString('es-ES', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  const htmlBody = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitación a CouplePlan</title>
+</head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background-color:#0f0f0f;">
+
+  <div style="max-width:480px;margin:0 auto;background:#18181b;border-radius:0;">
+
+    <!-- Header gradient -->
+    <div style="background:linear-gradient(135deg,#be123c 0%,#f43f5e 40%,#ec4899 70%,#8b5cf6 100%);padding:36px 24px 32px;text-align:center;">
+      <div style="width:64px;height:64px;background:rgba(255,255,255,0.15);border-radius:18px;margin:0 auto 16px;display:inline-block;line-height:64px;font-size:34px;">💕</div>
+      <h1 style="color:#ffffff;font-size:26px;font-weight:800;margin:0 0 4px;letter-spacing:-0.5px;">CouplePlan</h1>
+      <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;font-weight:400;">Planifica tu futuro juntos</p>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:28px 24px 20px;">
+
+      <p style="color:#f4f4f5;font-size:17px;font-weight:600;margin:0 0 6px;">¡Hola! 👋</p>
+      <p style="color:#a1a1aa;font-size:14px;line-height:1.65;margin:0 0 24px;">
+        <span style="color:#f43f5e;font-weight:600;">${inviterName}</span> te ha invitado a unirte a <strong style="color:#f4f4f5;">CouplePlan</strong> para planificar juntos su año.
+      </p>
+
+      <!-- Features card -->
+      <div style="background:#27272a;border-radius:14px;padding:20px 20px 14px;margin-bottom:26px;border:1px solid #3f3f46;">
+        <p style="color:#f43f5e;font-size:11px;font-weight:700;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.8px;">Con CouplePlan pueden:</p>
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding:0 8px 10px 0;width:50%;vertical-align:top;">
+              <span style="font-size:13px;color:#d4d4d8;">📅 Calendarios compartidos</span>
+            </td>
+            <td style="padding:0 0 10px 8px;width:50%;vertical-align:top;">
+              <span style="font-size:13px;color:#d4d4d8;">🎯 Metas anuales</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 8px 10px 0;vertical-align:top;">
+              <span style="font-size:13px;color:#d4d4d8;">💰 Presupuestos</span>
+            </td>
+            <td style="padding:0 0 10px 8px;vertical-align:top;">
+              <span style="font-size:13px;color:#d4d4d8;">✈️ Viajes juntos</span>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding:0;vertical-align:top;">
+              <span style="font-size:13px;color:#d4d4d8;">✅ División de tareas</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- CTA -->
+      <a href="${invitationUrl}"
+         style="display:block;background:linear-gradient(135deg,#f43f5e 0%,#ec4899 100%);color:#ffffff;text-decoration:none;padding:17px 24px;border-radius:12px;font-size:16px;font-weight:700;text-align:center;letter-spacing:0.2px;margin-bottom:16px;">
+        Aceptar Invitación 💕
+      </a>
+
+      <!-- Fallback link -->
+      <p style="color:#71717a;font-size:11px;text-align:center;margin:0 0 6px;">¿No funciona el botón? Copia este enlace:</p>
+      <p style="text-align:center;margin:0;">
+        <a href="${invitationUrl}" style="color:#f43f5e;font-size:11px;word-break:break-all;text-decoration:none;">${invitationUrl}</a>
+      </p>
+
+    </div>
+
+    <!-- Footer -->
+    <div style="background:#09090b;padding:18px 24px;text-align:center;border-top:1px solid #27272a;">
+      <p style="color:#52525b;font-size:11px;margin:0 0 4px;">
+        <strong style="color:#f43f5e;">CouplePlan</strong> • ${currentDate}
+      </p>
+      <p style="color:#3f3f46;font-size:10px;margin:0;">
+        Si no esperabas esta invitación, ignórala.
+      </p>
+    </div>
+
+  </div>
+
+</body>
+</html>`;
 
   try {
     const client = createSESClient();
