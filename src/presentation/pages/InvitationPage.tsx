@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Heart, CheckCircle, XCircle, Loader2, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -21,8 +21,8 @@ interface InvitationData {
 
 export const InvitationPage: React.FC = () => {
   const { token } = useParams<{ token: string }>();
-  const [searchParams] = useSearchParams();
-  // const emailFromUrl = searchParams.get('email'); // Available for future use
+  // const [searchParams] = useSearchParams(); // Available for future use
+  // const emailFromUrl = searchParams.get('email');
   const navigate = useNavigate();
   const { user, acceptInvitation } = useAuth();
   
