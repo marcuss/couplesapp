@@ -67,7 +67,7 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
       const { data, error } = await supabase
         .from('invitations')
         .select('*')
-        .eq('inviter_id', inviterId)
+        .eq('from_user_id', inviterId)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -86,7 +86,7 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
       const { data, error } = await supabase
         .from('invitations')
         .select('*')
-        .eq('email', email)
+        .eq('to_email', email)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -105,7 +105,7 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
       const { data, error } = await supabase
         .from('invitations')
         .select('*')
-        .eq('inviter_id', inviterId)
+        .eq('from_user_id', inviterId)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
@@ -125,7 +125,7 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
       const { data, error } = await supabase
         .from('invitations')
         .select('*')
-        .eq('email', email)
+        .eq('to_email', email)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
@@ -148,7 +148,7 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
       const { data, error } = await supabase
         .from('invitations')
         .select('*')
-        .eq('inviter_id', inviterId)
+        .eq('from_user_id', inviterId)
         .eq('status', status)
         .order('created_at', { ascending: false });
 
@@ -190,12 +190,10 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
         .from('invitations')
         .insert({
           id: invitation.id,
-          token: invitation.token,
-          inviter_id: invitation.inviterId,
-          email: invitation.inviteeEmail,
+          from_user_id: invitation.inviterId,
+          to_email: invitation.inviteeEmail,
           status: invitation.status,
           created_at: invitation.createdAt.toISOString(),
-          expires_at: invitation.expiresAt?.toISOString() || null,
         });
 
       if (error) {
@@ -256,7 +254,7 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
       const { data, error } = await supabase
         .from('invitations')
         .select('id')
-        .eq('inviter_id', inviterId)
+        .eq('from_user_id', inviterId)
         .eq('status', 'pending')
         .single();
 
@@ -278,7 +276,7 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
       const { data, error } = await supabase
         .from('invitations')
         .select('id')
-        .eq('email', email)
+        .eq('to_email', email)
         .eq('status', 'pending')
         .single();
 
@@ -300,7 +298,7 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
       const { data, error } = await supabase
         .from('invitations')
         .select('id', { count: 'exact' })
-        .eq('inviter_id', inviterId)
+        .eq('from_user_id', inviterId)
         .eq('status', 'pending');
 
       if (error) {
@@ -316,12 +314,12 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
   private mapToEntity(data: any): Invitation {
     return Invitation.reconstitute({
       id: data.id,
-      token: data.token,
-      inviterId: data.inviter_id,
-      inviteeEmail: data.email,
+      token: data.id, // no token column in DB, use id as token
+      inviterId: data.from_user_id,
+      inviteeEmail: data.to_email,
       status: data.status as InvitationStatus,
       createdAt: new Date(data.created_at),
-      expiresAt: data.expires_at ? new Date(data.expires_at) : undefined,
+      expiresAt: undefined, // no expires_at column in DB
     });
   }
 }
