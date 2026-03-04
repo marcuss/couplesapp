@@ -21,8 +21,7 @@ interface InvitationData {
 
 export const InvitationPage: React.FC = () => {
   const { token } = useParams<{ token: string }>();
-  // const [searchParams] = useSearchParams(); // Available for future use
-  // const emailFromUrl = searchParams.get('email');
+  // const emailFromUrl = searchParams.get('email'); // Available for future use
   const navigate = useNavigate();
   const { user, acceptInvitation } = useAuth();
   
