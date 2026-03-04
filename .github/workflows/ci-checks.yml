@@ -2,9 +2,7 @@ name: CI Checks
 
 on:
   pull_request:
-    branches: [main]
-  push:
-    branches-ignore: [main]
+    branches: [main, develop, 'feature/**', 'fix/**']
 
 jobs:
   test-and-build:
@@ -16,5 +14,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
+      - run: npm run lint
+        continue-on-error: false
       - run: npm run test -- --run
       - run: npm run build
