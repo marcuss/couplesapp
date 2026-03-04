@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { User } from '../types';
 import { supabase } from '../lib/supabase';
+import { sendInvitationEmail } from '../services/emailService';
 
 interface AuthContextType {
   user: User | null;
@@ -177,76 +178,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const acceptInvitation = useCallback(async (token: string, password: string, name: string) => {
     try {
-      // Fetch the invitation
-      const { data: invitation, error: invitationError } = await supabase
-        .from('invitations')
-        .select('*')
-        .eq('token', token)
-        .single();
-
-      if (invitationError || !invitation) {
-        return { error: new Error('Invitación no válida o expirada') };
-      }
-
-      if (invitation.status !== 'pending') {
-        return { error: new Error('Esta invitación ya ha sido utilizada') };
-      }
-
-      // Sign up the new user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: invitation.email,
-        password,
+      // FIX (Bug #1 — RLS 42501):
+      // En lugar de hacer el signup + insert de profile directamente desde el cliente
+      // (lo que falla con error 42501 de RLS porque el nuevo usuario no tiene permiso
+      // de INSERT en la tabla profiles), delegamos toda la lógica a una Edge Function
+      // que corre en el servidor con service_role y puede bypassear el RLS.
+      //
+      // La Edge Function 'accept-invitation':
+      //   1. Valida el token de invitación
+      //   2. Crea el usuario en auth.users con admin.createUser()
+      //   3. Crea el perfil en profiles con service_role (sin RLS)
+      //   4. Actualiza la invitación a 'accepted'
+      //   5. Enlaza los partner_id de ambos usuarios
+      const { data, error: fnError } = await supabase.functions.invoke('accept-invitation', {
+        body: { token, password, name },
       });
 
-      if (authError) {
-        return { error: authError };
+      if (fnError) {
+        console.error('Error en Edge Function accept-invitation:', fnError);
+        return { error: fnError };
       }
 
-      if (!authData.user) {
-        return { error: new Error('No se pudo crear el usuario') };
+      // La función devuelve el userId del nuevo usuario para cargar su perfil
+      const userId = data?.userId;
+      if (userId) {
+        await loadUserProfile(userId);
       }
 
-      // THIS IS THE BUG: Creating profile fails with RLS policy violation
-      // The new user doesn't have INSERT permission on profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          email: invitation.email,
-          name,
-          partner_id: invitation.inviter_id,
-        });
-
-      if (profileError) {
-        console.error('Error creating profile for invited user:', profileError);
-        
-        // Log the specific RLS error for debugging
-        if (profileError.code === '42501') {
-          console.error('RLS Policy Violation - Code 42501');
-          console.error('The new user cannot insert into profiles table');
-          console.error('This is the bug we need to fix!');
-        }
-        
-        return { error: profileError };
-      }
-
-      // Update invitation status
-      const { error: updateError } = await supabase
-        .from('invitations')
-        .update({ status: 'accepted' })
-        .eq('token', token);
-
-      if (updateError) {
-        console.error('Error updating invitation:', updateError);
-      }
-
-      // Update inviter's profile with new partner
-      await supabase
-        .from('profiles')
-        .update({ partner_id: authData.user.id })
-        .eq('id', invitation.inviter_id);
-
-      await loadUserProfile(authData.user.id);
       return { error: null };
     } catch (error) {
       return { error: error as Error };
@@ -281,18 +239,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
       const invitationUrl = `${baseUrl}/invitation/${token}`;
 
-      // Try to send invitation email via Supabase Edge Function
+      // Enviar email de invitación vía EmailJS
       try {
-        await supabase.functions.invoke('send-invitation', {
-          body: {
-            to: email.trim().toLowerCase(),
-            inviterName: user.name || user.email,
-            invitationUrl,
-          },
+        const emailResult = await sendInvitationEmail({
+          toEmail: email.trim().toLowerCase(),
+          inviterName: user.name || user.email || 'Tu pareja',
+          invitationUrl,
         });
+        if (!emailResult.success) {
+          console.warn('EmailJS: email no enviado, pero la invitación fue creada:', emailResult.error);
+        }
       } catch (emailErr) {
-        // Email sending might fail if edge function doesn't exist, but invitation is created
-        console.warn('Email sending failed, but invitation was created:', emailErr);
+        // El fallo del email no bloquea la creación de la invitación
+        console.warn('Error enviando email de invitación:', emailErr);
       }
 
       return { 

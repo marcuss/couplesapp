@@ -83,18 +83,25 @@ export const DashboardPage: React.FC = () => {
     pendingTasks: tasks.length,
   };
 
-  // Get today's events
-  const getTodayEvents = () => {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentDay = currentDate.getDate();
+  // FIX Bug #2 — Timezone mismatch:
+  // Antes: se comparaban componentes (year/month/day) de `new Date()` con los del string de Supabase.
+  // Problema: el campo `date` en Supabase es tipo DATE (YYYY-MM-DD, sin timezone).
+  // Si se usaran métodos UTC (getUTCDate, etc.) habría mismatch con la hora local del usuario.
+  // Fix: construir la fecha local como string 'YYYY-MM-DD' y comparar directamente.
+  const getTodayDateString = (): string => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
+  const getTodayEvents = () => {
+    const todayStr = getTodayDateString();
     return events.filter(event => {
-      const [eventYear, eventMonth, eventDay] = event.date.split('-').map(Number);
-      return eventYear === currentYear && 
-             eventMonth === currentMonth && 
-             eventDay === currentDay;
+      // Normalizar: strip del componente de tiempo si event.date viene como ISO datetime
+      const eventDateStr = event.date.split('T')[0];
+      return eventDateStr === todayStr;
     });
   };
 
