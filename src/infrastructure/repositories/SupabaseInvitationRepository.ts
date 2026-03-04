@@ -311,6 +311,7 @@ export class SupabaseInvitationRepository implements IInvitationRepository {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapToEntity(data: any): Invitation {
     return Invitation.reconstitute({
       id: data.id,

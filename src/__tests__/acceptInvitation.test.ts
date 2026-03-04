@@ -169,6 +169,7 @@ describe('Bug #1 — RLS violation en acceptInvitation', () => {
 
     // La versión buggy DEVUELVE error
     expect(result.error).not.toBeNull();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((result.error as any)?.code).toBe('42501');
   });
 

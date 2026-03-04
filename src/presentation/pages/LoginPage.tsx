@@ -33,7 +33,7 @@ export const LoginPage: React.FC = () => {
       } else {
         navigate('/dashboard');
       }
-    } catch (err) {
+    } catch {
       setError(t('errors.generic'));
     } finally {
       setIsLoading(false);
