@@ -1,3 +1,59 @@
+# CouplesApp
+
+## Configuración de Supabase (Entornos)
+
+### Proyectos Supabase
+
+La app usa 2 proyectos Supabase separados gestionados via Terraform en [nextasyapps-infra](https://github.com/marcuss/nextasyapps-infra):
+
+| Entorno | Proyecto | Branch |
+|---------|----------|--------|
+| Dev | `couplesapp-dev` | develop/feature branches |
+| Prod | `couplesapp-prod` | main |
+
+### Cómo obtener las keys de cada ambiente
+
+#### Opción 1: Desde el dashboard de Supabase
+
+1. Ir a https://supabase.com/dashboard
+2. Seleccionar el proyecto (`couplesapp-dev` o `couplesapp-prod`)
+3. Ir a **Settings → API**
+4. Copiar:
+   - **Project URL** → `VITE_SUPABASE_URL`
+   - **Project API Keys → anon public** → `VITE_SUPABASE_ANON_KEY`
+
+#### Opción 2: Desde Terraform outputs
+
+```bash
+cd terraform/environments/dev
+terraform output dev_api_url      # para .env (dev)
+terraform output dev_anon_key     # para .env (dev)
+terraform output prod_api_url     # para .env.production
+terraform output prod_anon_key    # para .env.production
+```
+
+#### Opción 3: Desde Supabase CLI
+
+```bash
+# Instalar CLI: https://supabase.com/docs/guides/cli
+supabase projects list
+supabase projects api-keys --project-ref <PROJECT_REF>
+```
+
+### Variables de entorno requeridas
+
+Crear `.env` (desarrollo) y `.env.production` (producción):
+
+```env
+VITE_SUPABASE_URL=https://<project-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY=<anon-key>
+VITE_APP_URL=http://localhost:5173  # o URL de producción
+```
+
+> ⚠️ **Nunca** subir archivos `.env` con valores reales al repositorio.
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
