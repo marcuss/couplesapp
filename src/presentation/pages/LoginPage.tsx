@@ -10,16 +10,45 @@ import { Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { OAuthButton } from '../components/OAuthButton';
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, signInWithGoogle, signInWithApple } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setIsGoogleLoading(true);
+    try {
+      const { error } = await signInWithGoogle();
+      if (error) setError('No se pudo iniciar sesión con Google. Verificá que esté configurado.');
+    } catch {
+      setError(t('errors.generic'));
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    setError(null);
+    setIsAppleLoading(true);
+    try {
+      const { error } = await signInWithApple();
+      if (error) setError('No se pudo iniciar sesión con Apple. Verificá que esté configurado.');
+    } catch {
+      setError(t('errors.generic'));
+    } finally {
+      setIsAppleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,6 +159,34 @@ export const LoginPage: React.FC = () => {
               {isLoading ? t('common.loading') : t('auth.login')}
             </button>
           </form>
+
+          {/* OAuth Divider */}
+          <div className="mt-6 relative" data-testid="oauth-divider">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200 dark:border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white dark:bg-gray-800 px-3 text-gray-500 dark:text-gray-400">
+                O continuar con
+              </span>
+            </div>
+          </div>
+
+          {/* OAuth Buttons */}
+          <div className="mt-4 space-y-3" data-testid="oauth-buttons">
+            <OAuthButton
+              provider="google"
+              onClick={handleGoogleLogin}
+              isLoading={isGoogleLoading}
+              disabled={isLoading || isAppleLoading}
+            />
+            <OAuthButton
+              provider="apple"
+              onClick={handleAppleLogin}
+              isLoading={isAppleLoading}
+              disabled={isLoading || isGoogleLoading}
+            />
+          </div>
 
           {/* Register Link */}
           <p className="mt-6 text-center text-gray-600 dark:text-gray-400">

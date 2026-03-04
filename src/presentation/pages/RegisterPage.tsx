@@ -1,15 +1,16 @@
 /**
  * Register Page
- * User registration page with password strength indicator
+ * User registration page with password strength indicator and OAuth options
  */
 
 import React, { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Heart, Mail, Lock, Eye, EyeOff, User, Check, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { OAuthButton } from '../components/OAuthButton';
 import { validatePasswordRules } from '../../domain/value-objects/Password';
 
 // ─── Password strength colours ───────────────────────────────────────────────
@@ -45,7 +46,8 @@ const Requirement: React.FC<RequirementProps> = ({ met, label }) => (
 
 export const RegisterPage: React.FC = () => {
   const { t } = useTranslation();
-  const { register } = useAuth();
+  const navigate = useNavigate();
+  const { register, signInWithGoogle, signInWithApple } = useAuth();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -54,6 +56,8 @@ export const RegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
 
@@ -68,6 +72,32 @@ export const RegisterPage: React.FC = () => {
     setPassword(e.target.value);
     setPasswordTouched(true);
   }, []);
+
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setIsGoogleLoading(true);
+    try {
+      const { error: oauthError } = await signInWithGoogle();
+      if (oauthError) setError('No se pudo registrar con Google. Verificá que esté configurado.');
+    } catch {
+      setError(t('errors.generic'));
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    setError(null);
+    setIsAppleLoading(true);
+    try {
+      const { error: oauthError } = await signInWithApple();
+      if (oauthError) setError('No se pudo registrar con Apple. Verificá que esté configurado.');
+    } catch {
+      setError(t('errors.generic'));
+    } finally {
+      setIsAppleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,8 +116,8 @@ export const RegisterPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await register(email, password, name);
-      if (error) {
+      const { error: registerError } = await register(email, password, name);
+      if (registerError) {
         setError(t('auth.registerError'));
       } else {
         setSuccess(true);
@@ -99,22 +129,23 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
+  // Navigate away after successful registration (unused for now — success screen shown instead)
+  void navigate;
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 px-4">
-        {/* Top Right Actions */}
         <div className="absolute top-4 right-4 flex items-center gap-2">
           <LanguageSelector />
           <ThemeToggle />
         </div>
-
         <div className="w-full max-w-md text-center">
           <Heart className="h-16 w-16 text-rose-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {t('success')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t('auth.registerSuccess')}
+            {t('auth.checkEmail')}
           </p>
           <Link
             to="/login"
@@ -129,42 +160,25 @@ export const RegisterPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 px-4">
-      {/* Top Right Actions */}
       <div className="absolute top-4 right-4 flex items-center gap-2">
         <LanguageSelector />
         <ThemeToggle />
       </div>
 
       <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center space-x-3">
-            <Heart className="h-12 w-12 text-rose-500" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
-              {t('common.appName')}
-            </span>
-          </div>
-        </div>
-
-        {/* Register Card */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
-            {t('auth.registerTitle')}
-          </h1>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
-            {t('auth.registerSubtitle')}
-          </p>
+          <div className="text-center mb-8">
+            <Heart className="h-12 w-12 text-rose-500 mx-auto mb-3" />
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('auth.register')}</h1>
+          </div>
 
           {error && (
-            <div
-              className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg text-sm"
-              data-testid="register-error"
-            >
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm" data-testid="register-error">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" data-testid="register-form">
             {/* Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -178,7 +192,7 @@ export const RegisterPage: React.FC = () => {
                   onChange={(e) => setName(e.target.value)}
                   required
                   className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
-                  placeholder={t('auth.name')}
+                  placeholder={t('auth.namePlaceholder')}
                   data-testid="register-name"
                 />
               </div>
@@ -197,7 +211,7 @@ export const RegisterPage: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
-                  placeholder="you@example.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   data-testid="register-email"
                 />
               </div>
@@ -214,7 +228,6 @@ export const RegisterPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={handlePasswordChange}
-                  onBlur={() => setPasswordTouched(true)}
                   required
                   className="w-full pl-10 pr-12 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                   placeholder="••••••••"
@@ -223,49 +236,34 @@ export const RegisterPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  data-testid="toggle-password-visibility"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
 
-              {/* Strength Meter */}
-              {password.length > 0 && strengthInfo && (
-                <div className="mt-2" data-testid="password-strength-meter">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Password strength</span>
-                    <span className={`text-xs font-medium ${strengthInfo.textColor}`} data-testid="strength-label">
-                      {strengthInfo.label}
-                    </span>
+              {/* Strength bar */}
+              {strengthInfo && (
+                <div className="mt-2" data-testid="password-strength-bar">
+                  <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all ${strengthInfo.color} ${strengthInfo.width}`} />
                   </div>
-                  <div className="h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full ${strengthInfo.color} ${strengthInfo.width} transition-all duration-300`}
-                      data-testid="strength-bar"
-                    />
-                  </div>
+                  <p className={`text-xs mt-1 ${strengthInfo.textColor}`} data-testid="password-strength-label">
+                    {strengthInfo.label}
+                  </p>
                 </div>
               )}
 
-              {/* Requirements list */}
-              {(passwordTouched || password.length > 0) && (
-                <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg" data-testid="password-requirements">
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-2">Password requirements:</p>
-                  <ul className="space-y-1">
-                    <Requirement met={passwordValidation.checks.minLength} label="At least 8 characters" />
-                    <Requirement met={passwordValidation.checks.hasUpperCase} label="One uppercase letter (A-Z)" />
-                    <Requirement met={passwordValidation.checks.hasLowerCase} label="One lowercase letter (a-z)" />
-                    <Requirement met={passwordValidation.checks.hasNumber} label="One number (0-9)" />
-                    <Requirement met={passwordValidation.checks.hasSpecialChar} label="One special character (!@#$...)" />
-                  </ul>
-                </div>
-              )}
-
-              {/* Inline error when touched and invalid */}
-              {passwordTouched && !isPasswordValid && password.length > 0 && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400" data-testid="password-inline-error">
-                  {passwordValidation.errors[0]}
-                </p>
+              {/* Requirements */}
+              {passwordTouched && (
+                <ul className="mt-2 space-y-1" data-testid="password-requirements">
+                  <Requirement met={passwordValidation.rules.minLength} label="At least 8 characters" />
+                  <Requirement met={passwordValidation.rules.hasUppercase} label="One uppercase letter" />
+                  <Requirement met={passwordValidation.rules.hasLowercase} label="One lowercase letter" />
+                  <Requirement met={passwordValidation.rules.hasNumber} label="One number" />
+                  <Requirement met={passwordValidation.rules.hasSpecial} label="One special character" />
+                </ul>
               )}
             </div>
 
@@ -299,13 +297,38 @@ export const RegisterPage: React.FC = () => {
             </button>
           </form>
 
+          {/* OAuth Divider */}
+          <div className="mt-6 relative" data-testid="register-oauth-divider">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200 dark:border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white dark:bg-gray-800 px-3 text-gray-500 dark:text-gray-400">
+                O registrarse con
+              </span>
+            </div>
+          </div>
+
+          {/* OAuth Buttons */}
+          <div className="mt-4 space-y-3" data-testid="register-oauth-buttons">
+            <OAuthButton
+              provider="google"
+              onClick={handleGoogleLogin}
+              isLoading={isGoogleLoading}
+              disabled={isLoading || isAppleLoading}
+            />
+            <OAuthButton
+              provider="apple"
+              onClick={handleAppleLogin}
+              isLoading={isAppleLoading}
+              disabled={isLoading || isGoogleLoading}
+            />
+          </div>
+
           {/* Login Link */}
           <p className="mt-6 text-center text-gray-600 dark:text-gray-400">
             {t('auth.hasAccount')}{' '}
-            <Link
-              to="/login"
-              className="text-rose-500 hover:text-rose-600 font-medium"
-            >
+            <Link to="/login" className="text-rose-500 hover:text-rose-600 font-medium">
               {t('auth.login')}
             </Link>
           </p>
