@@ -15,10 +15,13 @@ import {
   ArrowLeft,
   CheckCircle,
   X,
-  UserPlus
+  UserPlus,
+  MapPin,
+  Navigation
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { setManualCity, detectAndUpdateCity, getCachedCity } from '../../lib/cityDetectionService';
 
 interface Invitation {
   id: string;
@@ -39,6 +42,13 @@ export const ProfilePage: React.FC = () => {
   const [pendingInvitations, setPendingInvitations] = useState<Invitation[]>([]);
   const [, setIsLoadingInvitations] = useState(true);
   const [respondingTo, setRespondingTo] = useState<string | null>(null);
+
+  // City state
+  const [city, setCity] = useState<string>(getCachedCity() ?? '');
+  const [isSavingCity, setIsSavingCity] = useState(false);
+  const [cityEditValue, setCityEditValue] = useState<string>('');
+  const [isEditingCity, setIsEditingCity] = useState(false);
+  const [isDetectingCity, setIsDetectingCity] = useState(false);
 
   // Fetch pending invitations for current user
   useEffect(() => {
@@ -179,6 +189,36 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  const handleDetectCity = async () => {
+    setIsDetectingCity(true);
+    try {
+      const { city: detected } = await detectAndUpdateCity();
+      if (detected) {
+        setCity(detected);
+        setCityEditValue(detected);
+      }
+    } catch (err) {
+      console.error('Error detecting city:', err);
+    } finally {
+      setIsDetectingCity(false);
+    }
+  };
+
+  const handleSaveCity = async () => {
+    const trimmed = cityEditValue.trim();
+    if (!trimmed) return;
+    setIsSavingCity(true);
+    try {
+      await setManualCity(trimmed);
+      setCity(trimmed);
+      setIsEditingCity(false);
+    } catch (err) {
+      console.error('Error saving city:', err);
+    } finally {
+      setIsSavingCity(false);
+    }
+  };
+
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -224,6 +264,73 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* City Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6" data-testid="city-section">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <MapPin className="h-5 w-5 text-rose-500" />
+          Mi Ciudad
+        </h2>
+
+        {isEditingCity ? (
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={cityEditValue}
+              onChange={(e) => setCityEditValue(e.target.value)}
+              placeholder="Ej: Medellín, Bogotá…"
+              className="flex-1 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+              data-testid="city-input"
+              onKeyDown={(e) => e.key === 'Enter' && handleSaveCity()}
+            />
+            <button
+              onClick={handleSaveCity}
+              disabled={isSavingCity || !cityEditValue.trim()}
+              className="px-4 py-2 bg-rose-500 text-white text-sm rounded-lg hover:bg-rose-600 disabled:opacity-50"
+              data-testid="save-city-btn"
+            >
+              {isSavingCity ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Guardar'}
+            </button>
+            <button
+              onClick={() => { setIsEditingCity(false); setCityEditValue(city); }}
+              className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            >
+              Cancelar
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <p className="text-gray-700 dark:text-gray-300 text-sm">
+              {city || <span className="text-gray-400 italic">No configurada</span>}
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { setIsEditingCity(true); setCityEditValue(city); }}
+                className="text-sm text-rose-500 hover:text-rose-600"
+                data-testid="edit-city-btn"
+              >
+                Editar
+              </button>
+              <button
+                onClick={handleDetectCity}
+                disabled={isDetectingCity}
+                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                data-testid="detect-city-btn"
+              >
+                {isDetectingCity ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Navigation className="h-3.5 w-3.5" />
+                )}
+                Detectar
+              </button>
+            </div>
+          </div>
+        )}
+        <p className="mt-2 text-xs text-gray-400">
+          Usamos tu ciudad para mostrar ideas de citas personalizadas cada día.
+        </p>
       </div>
 
       {/* Pending Invitations */}
