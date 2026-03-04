@@ -37,7 +37,7 @@ export class PasswordError extends ValidationError {
   }
 }
 
-const SPECIAL_CHARS = /[!@#$%^&*()_+\-=\[\]{}|;':",./<>?]/;
+const SPECIAL_CHARS = /[!@#$%^&*()_+\-=[\]{}|;':",./<>?]/; // eslint-disable-line no-useless-escape
 const UPPERCASE = /[A-Z]/;
 const LOWERCASE = /[a-z]/;
 const NUMBER = /[0-9]/;

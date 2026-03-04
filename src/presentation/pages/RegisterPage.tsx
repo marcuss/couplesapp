@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Heart, Mail, Lock, Eye, EyeOff, User, Check, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -46,7 +46,6 @@ const Requirement: React.FC<RequirementProps> = ({ met, label }) => (
 export const RegisterPage: React.FC = () => {
   const { t } = useTranslation();
   const { register } = useAuth();
-  const navigate = useNavigate();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
