@@ -11,7 +11,7 @@ import { useTheme } from '../../design-system/components/ThemeProvider';
 type Theme = 'light' | 'dark' | 'system';
 
 export const ThemeToggle: React.FC = () => {
-  const { theme, setTheme, isDark } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { t } = useTranslation();
 
   const cycleTheme = () => {

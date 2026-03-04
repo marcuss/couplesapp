@@ -251,6 +251,7 @@ export class SupabaseTaskRepository implements ITaskRepository {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapToEntity(data: any): Task {
     return Task.reconstitute({
       id: data.id,

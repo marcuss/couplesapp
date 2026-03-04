@@ -47,27 +47,30 @@ export class UpdateGoalUseCase {
     if (dto.status && dto.status !== goal.status) {
       // Handle status transitions
       switch (dto.status) {
-        case 'in_progress':
+        case 'in_progress': {
           const startResult = goal.start();
           if (startResult.isFail()) {
             return Result.fail(startResult.getError());
           }
           updatedGoal = startResult.getValue();
           break;
-        case 'completed':
+        }
+        case 'completed': {
           const completeResult = goal.complete();
           if (completeResult.isFail()) {
             return Result.fail(completeResult.getError());
           }
           updatedGoal = completeResult.getValue();
           break;
-        case 'cancelled':
+        }
+        case 'cancelled': {
           const cancelResult = goal.cancel();
           if (cancelResult.isFail()) {
             return Result.fail(cancelResult.getError());
           }
           updatedGoal = cancelResult.getValue();
           break;
+        }
         default:
           return Result.fail(new ValidationError('Invalid status transition', 'status'));
       }

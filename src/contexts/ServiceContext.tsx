@@ -43,6 +43,7 @@ export const ServiceProvider: React.FC<ServiceProviderProps> = ({ services, chil
  * Hook to access all application services.
  * Must be used within a <ServiceProvider>.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useServices(): Services {
   const ctx = useContext(ServiceContext);
   if (!ctx) {

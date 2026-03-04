@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useServices } from '../../contexts/ServiceContext';
+import { DateIdeasWidget } from '../../components/dating-ideas/DateIdeasWidget';
 import { CalendarEvent, Goal, Budget, Task } from '../../types';
 
 interface DashboardStats {
@@ -240,6 +241,12 @@ export const DashboardPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Dating Ideas Widget */}
+      <DateIdeasWidget
+        profileCity={(user as unknown as { city?: string })?.city ?? undefined}
+        userId={user?.id}
+      />
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

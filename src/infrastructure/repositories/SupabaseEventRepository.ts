@@ -212,6 +212,7 @@ export class SupabaseEventRepository implements IEventRepository {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapToEntity(data: any): Event {
     const dateStr = data.date;
     const timeStr = data.time || '00:00';

@@ -194,6 +194,7 @@ export class SupabaseUserRepository implements IUserRepository {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapToEntity(data: any): User {
     return User.reconstitute({
       id: data.id,

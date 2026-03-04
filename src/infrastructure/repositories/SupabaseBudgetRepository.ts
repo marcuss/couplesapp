@@ -201,6 +201,7 @@ export class SupabaseBudgetRepository implements IBudgetRepository {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapToEntity(data: any): Budget {
     return Budget.reconstitute({
       id: data.id,

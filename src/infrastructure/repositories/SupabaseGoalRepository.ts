@@ -221,6 +221,7 @@ export class SupabaseGoalRepository implements IGoalRepository {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapToEntity(data: any): Goal {
     return Goal.reconstitute({
       id: data.id,

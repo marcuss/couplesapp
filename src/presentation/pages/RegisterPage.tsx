@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Heart, Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -46,7 +46,7 @@ export const RegisterPage: React.FC = () => {
       } else {
         setSuccess(true);
       }
-    } catch (err) {
+    } catch {
       setError(t('errors.generic'));
     } finally {
       setIsLoading(false);

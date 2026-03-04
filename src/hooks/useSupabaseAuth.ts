@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { User } from '../domain/entities/User';
+
 
 interface AuthUser {
   id: string;
@@ -144,7 +144,7 @@ export const useSupabaseAuth = () => {
   // Sign up
   const signUp = async (email: string, password: string, name?: string): Promise<{ error: AuthError | null }> => {
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
