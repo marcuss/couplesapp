@@ -6,6 +6,7 @@
 import { Result, AsyncResult } from '../../../shared/utils/Result';
 import { DomainError, ConflictError, ValidationError } from '../../../domain/errors/DomainError';
 import { User } from '../../../domain/entities/User';
+import { Password } from '../../../domain/value-objects/Password';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { RegisterDTO, RegisterResult } from '../../dto/RegisterDTO';
 
@@ -91,24 +92,10 @@ export class RegisterUseCase {
       return new ValidationError('Invalid email format', 'email');
     }
 
-    if (!dto.password || dto.password.length === 0) {
-      return new ValidationError('Password is required', 'password');
-    }
-
-    if (dto.password.length < 8) {
-      return new ValidationError('Password must be at least 8 characters', 'password');
-    }
-
-    // Password strength check
-    const hasUpperCase = /[A-Z]/.test(dto.password);
-    const hasLowerCase = /[a-z]/.test(dto.password);
-    const hasNumbers = /\d/.test(dto.password);
-
-    if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
-      return new ValidationError(
-        'Password must contain at least one uppercase letter, one lowercase letter, and one number',
-        'password'
-      );
+    // Validate password using the Password Value Object (fail fast in domain)
+    const passwordResult = Password.create(dto.password ?? '');
+    if (passwordResult.isFail()) {
+      return passwordResult.getError();
     }
 
     if (!dto.name || dto.name.trim().length === 0) {
