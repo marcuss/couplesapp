@@ -22,6 +22,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { MainLayout } from './components/MainLayout';
+import { AuthCallbackPage } from './pages/AuthCallbackPage';
 
 export const App: React.FC = () => {
   return (
@@ -34,6 +35,8 @@ export const App: React.FC = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/invitation/:token" element={<InvitationPage />} />
+            {/* OAuth callback — Supabase redirects here after Google/Apple login */}
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
