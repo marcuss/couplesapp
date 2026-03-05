@@ -11,9 +11,8 @@ import { supabase } from '../../lib/supabase';
 
 interface InvitationData {
   id: string;
-  token: string;
-  inviter_id: string;
-  email: string;
+  from_user_id: string;
+  to_email: string;
   status: string;
   inviter_name?: string;
   inviter_email?: string;
@@ -43,11 +42,11 @@ export const InvitationPage: React.FC = () => {
       }
 
       try {
-        // Fetch invitation from database
+        // Fetch invitation from database (id is used as token in URL)
         const { data, error } = await supabase
           .from('invitations')
           .select('*')
-          .eq('token', token)
+          .eq('id', token)
           .single();
 
         if (error || !data) {
@@ -62,18 +61,11 @@ export const InvitationPage: React.FC = () => {
           return;
         }
 
-        // Check if expired
-        if (new Date(data.expires_at) < new Date()) {
-          setStatus('invalid');
-          setErrorMessage('This invitation has expired.');
-          return;
-        }
-
         // Get inviter info
         const { data: inviterProfile } = await supabase
           .from('profiles')
           .select('name, email')
-          .eq('id', data.inviter_id)
+          .eq('id', data.from_user_id)
           .single();
 
         setInvitation({
@@ -105,7 +97,7 @@ export const InvitationPage: React.FC = () => {
 
     try {
       // Check if user email matches invitation email
-      if (user.email?.toLowerCase() !== invitation.email.toLowerCase()) {
+      if (user.email?.toLowerCase() !== invitation.to_email.toLowerCase()) {
         setErrorMessage('This invitation was sent to a different email address.');
         setStatus('error');
         setIsProcessing(false);
@@ -123,7 +115,7 @@ export const InvitationPage: React.FC = () => {
       // Update current user's partner_id
       const { error: userError } = await supabase
         .from('profiles')
-        .update({ partner_id: invitation.inviter_id })
+        .update({ partner_id: invitation.from_user_id })
         .eq('id', user.id);
 
       if (userError) throw userError;
@@ -132,7 +124,7 @@ export const InvitationPage: React.FC = () => {
       const { error: inviterError } = await supabase
         .from('profiles')
         .update({ partner_id: user.id })
-        .eq('id', invitation.inviter_id);
+        .eq('id', invitation.from_user_id);
 
       if (inviterError) throw inviterError;
 
@@ -320,7 +312,7 @@ export const InvitationPage: React.FC = () => {
                 </label>
                 <input
                   type="email"
-                  value={invitation?.email || ''}
+                  value={invitation?.to_email || ''}
                   disabled
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
                 />
@@ -413,10 +405,10 @@ export const InvitationPage: React.FC = () => {
             </ul>
           </div>
 
-          {user && user.email?.toLowerCase() !== invitation?.email.toLowerCase() && (
+          {user && user.email?.toLowerCase() !== invitation?.to_email.toLowerCase() && (
             <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <p className="text-sm text-yellow-700 dark:text-yellow-400">
-                <strong>Note:</strong> This invitation was sent to <strong>{invitation?.email}</strong>, 
+                <strong>Note:</strong> This invitation was sent to <strong>{invitation?.to_email}</strong>, 
                 but you're logged in as <strong>{user.email}</strong>. 
                 Please log out and use the correct email address.
               </p>
@@ -432,7 +424,7 @@ export const InvitationPage: React.FC = () => {
             </button>
             <button
               onClick={handleAccept}
-              disabled={isProcessing || (user?.email?.toLowerCase() !== invitation?.email.toLowerCase() && !!user)}
+              disabled={isProcessing || (user?.email?.toLowerCase() !== invitation?.to_email.toLowerCase() && !!user)}
               className="flex-1 py-3 px-4 bg-rose-500 text-white rounded-lg hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
             >
               {isProcessing ? (

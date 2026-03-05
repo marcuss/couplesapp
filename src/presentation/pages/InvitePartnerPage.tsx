@@ -39,18 +39,17 @@ export const InvitePartnerPage: React.FC = () => {
     setError(null);
 
     try {
-      // Generate a unique token
-      const token = crypto.randomUUID();
+      // Generate a unique id (used as token in invitation URL)
+      const id = crypto.randomUUID();
       
       // Create invitation in database
       const { error: inviteError } = await supabase
         .from('invitations')
         .insert({
-          token,
-          inviter_id: user.id,
-          email: email.trim().toLowerCase(),
+          id,
+          from_user_id: user.id,
+          to_email: email.trim().toLowerCase(),
           status: 'pending',
-          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
         });
 
       if (inviteError) {
@@ -59,7 +58,7 @@ export const InvitePartnerPage: React.FC = () => {
 
       // Get the base URL from environment variable or fallback
       const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
-      const invitationUrl = `${baseUrl}/invitation/${token}`;
+      const invitationUrl = `${baseUrl}/invitation/${id}`;
 
       // Generate the email template with i18n support
       const emailTemplate = createInvitationEmail({
