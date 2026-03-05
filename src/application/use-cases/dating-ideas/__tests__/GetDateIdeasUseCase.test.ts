@@ -1,26 +1,26 @@
 /**
  * GetDateIdeasUseCase tests
+ *
+ * The fallback now calls the Edge Function `generate-date-ideas` instead of
+ * calling OpenAI directly (VITE_OPENAI_API_KEY is not exposed in the frontend).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GetDateIdeasUseCase } from '../GetDateIdeasUseCase';
 import { IDateIdeasRepository } from '../../../../domain/repositories/IDateIdeasRepository';
 import { DateIdeas } from '../../../../domain/entities/DateIdea';
 
-// Mock Supabase client used inside the use-case for caching
+// Mock Supabase client — includes functions.invoke for the edge function fallback
+// NOTE: must use inline vi.fn() here because vi.mock is hoisted above variable declarations
 vi.mock('../../../../lib/supabase', () => ({
   supabase: {
-    from: vi.fn().mockReturnValue({
-      upsert: vi.fn().mockResolvedValue({ error: null }),
-    }),
+    functions: {
+      invoke: vi.fn().mockResolvedValue({ error: null }),
+    },
   },
 }));
 
-// Mock the OpenAI service
-vi.mock('../../../../services/dateIdeasService', () => ({
-  generateDateIdeasForCity: vi.fn(),
-}));
-
-import { generateDateIdeasForCity } from '../../../../services/dateIdeasService';
+// Import supabase AFTER mocking so we get the mocked version
+import { supabase } from '../../../../lib/supabase';
 
 const MOCK_IDEAS: DateIdeas = {
   id: 'di-1',
@@ -55,6 +55,8 @@ function makeRepo(overrides?: Partial<IDateIdeasRepository>): IDateIdeasReposito
 describe('GetDateIdeasUseCase', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset invoke to default success
+    vi.mocked(supabase.functions.invoke).mockResolvedValue({ data: null, error: null });
   });
 
   it('returns cached ideas when available', async () => {
@@ -66,23 +68,24 @@ describe('GetDateIdeasUseCase', () => {
 
     expect(result).toEqual(MOCK_IDEAS);
     expect(repo.getIdeasForCity).toHaveBeenCalledWith('Bogotá', '2026-03-04');
-    expect(generateDateIdeasForCity).not.toHaveBeenCalled();
+    expect(supabase.functions.invoke).not.toHaveBeenCalled();
   });
 
-  it('generates ideas via OpenAI when cache is empty', async () => {
-    const repo = makeRepo({ getIdeasForCity: vi.fn().mockResolvedValue(null) });
-    vi.mocked(generateDateIdeasForCity).mockResolvedValue({
-      ideas: MOCK_IDEAS.ideas,
-      cityNote: MOCK_IDEAS.cityNote,
-    });
+  it('calls edge function and re-fetches when cache is empty', async () => {
+    // First call returns null (cache miss), second returns the generated ideas
+    const getIdeasForCity = vi.fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(MOCK_IDEAS);
+    const repo = makeRepo({ getIdeasForCity });
 
     const uc = new GetDateIdeasUseCase(repo);
     const result = await uc.execute({ city: 'Bogotá', date: '2026-03-04' });
 
-    expect(generateDateIdeasForCity).toHaveBeenCalledWith('Bogotá', '2026-03-04');
-    expect(result).not.toBeNull();
-    expect(result?.city).toBe('Bogotá');
-    expect(result?.ideas).toEqual(MOCK_IDEAS.ideas);
+    expect(supabase.functions.invoke).toHaveBeenCalledWith('generate-date-ideas', {
+      body: { cities: ['Bogotá'] },
+    });
+    expect(getIdeasForCity).toHaveBeenCalledTimes(2);
+    expect(result).toEqual(MOCK_IDEAS);
   });
 
   it('returns null when city is empty', async () => {
@@ -94,9 +97,22 @@ describe('GetDateIdeasUseCase', () => {
     expect(repo.getIdeasForCity).not.toHaveBeenCalled();
   });
 
-  it('returns null when generation fails', async () => {
+  it('returns null when edge function returns an error', async () => {
     const repo = makeRepo({ getIdeasForCity: vi.fn().mockResolvedValue(null) });
-    vi.mocked(generateDateIdeasForCity).mockRejectedValue(new Error('API error'));
+    vi.mocked(supabase.functions.invoke).mockResolvedValue({
+      data: null,
+      error: new Error('Function error'),
+    });
+
+    const uc = new GetDateIdeasUseCase(repo);
+    const result = await uc.execute({ city: 'Cali', date: '2026-03-04' });
+
+    expect(result).toBeNull();
+  });
+
+  it('returns null when edge function throws', async () => {
+    const repo = makeRepo({ getIdeasForCity: vi.fn().mockResolvedValue(null) });
+    vi.mocked(supabase.functions.invoke).mockRejectedValue(new Error('Network error'));
 
     const uc = new GetDateIdeasUseCase(repo);
     const result = await uc.execute({ city: 'Cali', date: '2026-03-04' });
