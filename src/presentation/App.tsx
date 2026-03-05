@@ -20,6 +20,7 @@ import { InvitationPage } from './pages/InvitationPage';
 import { InvitePartnerPage } from './pages/InvitePartnerPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
+import { CalendarSettingsPage } from './pages/CalendarSettingsPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { MainLayout } from './components/MainLayout';
 import { AuthCallbackPage } from './pages/AuthCallbackPage';
@@ -49,6 +50,8 @@ export const App: React.FC = () => {
                 <Route path="/invite" element={<InvitePartnerPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/settings/calendar" element={<CalendarSettingsPage />} />
+                <Route path="/auth/google/callback" element={<CalendarSettingsPage />} />
               </Route>
             </Route>
 
