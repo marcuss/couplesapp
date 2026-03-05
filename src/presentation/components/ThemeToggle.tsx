@@ -49,6 +49,7 @@ export const ThemeToggle: React.FC = () => {
       className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
       aria-label={getLabel()}
       title={getLabel()}
+      data-testid="theme-toggle"
     >
       {getIcon()}
       <span className="hidden sm:inline text-sm font-medium">{getLabel()}</span>
