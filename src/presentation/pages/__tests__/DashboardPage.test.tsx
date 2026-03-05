@@ -21,6 +21,13 @@ import { IEventService } from '../../../application/services/IEventService';
 import { IBudgetService } from '../../../application/services/IBudgetService';
 
 // Mock react-i18next
+vi.mock('../../../lib/supabase', () => ({
+  supabase: {
+    from: vi.fn().mockReturnValue({ select: vi.fn(), insert: vi.fn(), upsert: vi.fn() }),
+    functions: { invoke: vi.fn().mockResolvedValue({ error: null }) },
+  },
+}));
+
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) => {
