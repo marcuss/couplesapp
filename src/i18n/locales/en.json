@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "CouplePlan",
+    "appName": "LoveCompass",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -228,7 +228,7 @@
   },
   "invitation": {
     "title": "You've Been Invited!",
-    "subtitle": "{{name}} wants to connect with you on CouplePlan",
+    "subtitle": "{{name}} wants to connect with you on LoveCompass",
     "acceptInvitation": "Accept Invitation",
     "declineInvitation": "Decline",
     "createAccount": "Create Account to Accept",
@@ -239,7 +239,7 @@
     "expired": "This invitation has expired",
     "wrongEmail": "This invitation was sent to a different email address",
     "acceptSuccess": "Invitation accepted successfully!",
-    "welcomeMessage": "Welcome to CouplePlan! You are now connected with {{name}}."
+    "welcomeMessage": "Welcome to LoveCompass! You are now connected with {{name}}."
   },
   "settings": {
     "title": "Settings",
@@ -264,10 +264,10 @@
     "deleteConfirm": "Are you sure? This action cannot be undone."
   },
   "email": {
-    "invitationSubject": "You've been invited to join CouplePlan!",
-    "invitationBody": "Hi there!\n\n{{inviterName}} has invited you to join CouplePlan - the app for couples to plan their life together.\n\nClick the link below to accept the invitation and create your account:\n\n{{invitationUrl}}\n\nThis invitation will expire in 7 days.\n\nWith love,\nThe CouplePlan Team",
-    "welcomeSubject": "Welcome to CouplePlan!",
-    "welcomeBody": "Hi {{name}},\n\nWelcome to CouplePlan! We're excited to have you on board.\n\nStart planning your life together with your partner:\n- Create shared events\n- Set couple goals\n- Manage your budget\n- Track tasks\n\nGet started now: {{appUrl}}\n\nWith love,\nThe CouplePlan Team"
+    "invitationSubject": "You've been invited to join LoveCompass!",
+    "invitationBody": "Hi there!\n\n{{inviterName}} has invited you to join LoveCompass - the app for couples to plan their life together.\n\nClick the link below to accept the invitation and create your account:\n\n{{invitationUrl}}\n\nThis invitation will expire in 7 days.\n\nWith love,\nThe LoveCompass Team",
+    "welcomeSubject": "Welcome to LoveCompass!",
+    "welcomeBody": "Hi {{name}},\n\nWelcome to LoveCompass! We're excited to have you on board.\n\nStart planning your life together with your partner:\n- Create shared events\n- Set couple goals\n- Manage your budget\n- Track tasks\n\nGet started now: {{appUrl}}\n\nWith love,\nThe LoveCompass Team"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",

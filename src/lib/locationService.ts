@@ -29,7 +29,7 @@ export async function reverseGeocode(
       `?lat=${latitude}&lon=${longitude}&format=json&accept-language=es`;
 
     const response = await fetch(url, {
-      headers: { 'User-Agent': 'CouplesApp/1.0' },
+      headers: { 'User-Agent': 'LoveCompass/1.0' },
     });
 
     if (!response.ok) return null;

@@ -281,7 +281,7 @@ export const InvitationPage: React.FC = () => {
                 Create Your Account
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
-                {invitation?.inviter_name || invitation?.inviter_email} invited you to join CouplePlan!
+                {invitation?.inviter_name || invitation?.inviter_email} invited you to join LoveCompass!
               </p>
             </div>
 
