@@ -216,14 +216,24 @@ function getFeaturesList(language: string): string {
 }
 
 /**
+ * Normalize a language code to its base form (e.g. 'en-US' → 'en').
+ * Falls back to 'en' if the normalized code is not in the translations.
+ */
+function normalizeLanguage(lang: string): LanguageCode {
+  const base = lang.split('-')[0] as LanguageCode;
+  return invitationTranslations[base] ? base : 'en';
+}
+
+/**
  * Create the complete invitation email template
  */
 export function createInvitationEmail(data: InvitationEmailData): EmailTemplate<InvitationEmailData> {
+  const normalizedData = { ...data, language: normalizeLanguage(data.language) };
   return {
-    subject: getSubject(data),
-    html: generateHtml(data),
-    text: generateText(data),
-    data,
+    subject: getSubject(normalizedData),
+    html: generateHtml(normalizedData),
+    text: generateText(normalizedData),
+    data: normalizedData,
   };
 }
 
