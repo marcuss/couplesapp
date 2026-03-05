@@ -4,7 +4,6 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Result } from '../../../shared/utils/Result';
 import { DatabaseError, UnauthorizedError } from '../../../domain/errors/DomainError';
 
 // Mock Supabase before importing the repo
@@ -42,6 +41,7 @@ function mockProfileQuery(profile: Record<string, unknown> | null, error?: { cod
   return chain;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function mockInsertQuery(error?: { message: string } | null) {
   const chain = {
     insert: vi.fn().mockResolvedValue({ data: null, error: error ?? null }),

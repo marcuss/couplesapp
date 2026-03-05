@@ -3,7 +3,7 @@
  * Initiates the Google OAuth flow via the auth repository
  */
 
-import { Result, AsyncResult } from '../../../shared/utils/Result';
+import { AsyncResult } from '../../../shared/utils/Result';
 import { DomainError } from '../../../domain/errors/DomainError';
 import { IAuthRepository } from '../../../domain/repositories/IAuthRepository';
 

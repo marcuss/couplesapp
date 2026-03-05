@@ -223,18 +223,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error: new Error('You must be logged in to invite a partner') };
       }
 
-      // Generate a unique token
-      const token = crypto.randomUUID();
+      // Generate a unique id (used as token in invitation URL)
+      const id = crypto.randomUUID();
       
       // Create invitation in database
       const { error: inviteError } = await supabase
         .from('invitations')
         .insert({
-          token,
-          inviter_id: user.id,
-          email: email.trim().toLowerCase(),
+          id,
+          from_user_id: user.id,
+          to_email: email.trim().toLowerCase(),
           status: 'pending',
-          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         });
 
       if (inviteError) {
@@ -243,7 +242,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Get the base URL from environment variable or fallback
       const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
-      const invitationUrl = `${baseUrl}/invitation/${token}`;
+      const invitationUrl = `${baseUrl}/invitation/${id}`;
 
       // Enviar email de invitación vía EmailJS
       try {
@@ -263,7 +262,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { 
         error: null, 
         data: { 
-          token, 
+          token: id, 
           invitationUrl 
         } 
       };
