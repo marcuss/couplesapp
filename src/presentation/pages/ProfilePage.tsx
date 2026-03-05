@@ -22,6 +22,8 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { setManualCity, detectAndUpdateCity, getCachedCity } from '../../lib/cityDetectionService';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { LanguageSelector } from '../components/LanguageSelector';
 
 interface Invitation {
   id: string;
@@ -478,6 +480,23 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Preferences / Settings */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6" data-testid="preferences-section">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Preferencias
+        </h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-700 dark:text-gray-300">Modo oscuro</span>
+            <ThemeToggle />
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-700 dark:text-gray-300">Idioma</span>
+            <LanguageSelector />
+          </div>
+        </div>
+      </div>
 
       {/* Logout */}
       <button

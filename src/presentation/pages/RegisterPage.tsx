@@ -8,8 +8,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Heart, Mail, Lock, Eye, EyeOff, User, Check, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { LanguageSelector } from '../components/LanguageSelector';
-import { ThemeToggle } from '../components/ThemeToggle';
 import { OAuthButton } from '../components/OAuthButton';
 import { validatePasswordRules } from '../../domain/value-objects/Password';
 
@@ -135,10 +133,6 @@ export const RegisterPage: React.FC = () => {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 px-4">
-        <div className="absolute top-4 right-4 flex items-center gap-2">
-          <LanguageSelector />
-          <ThemeToggle />
-        </div>
         <div className="w-full max-w-md text-center">
           <Heart className="h-16 w-16 text-rose-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -160,11 +154,6 @@ export const RegisterPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 px-4">
-      <div className="absolute top-4 right-4 flex items-center gap-2">
-        <LanguageSelector />
-        <ThemeToggle />
-      </div>
-
       <div className="w-full max-w-md">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">

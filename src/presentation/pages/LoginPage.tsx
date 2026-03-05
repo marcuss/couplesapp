@@ -8,8 +8,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { LanguageSelector } from '../components/LanguageSelector';
-import { ThemeToggle } from '../components/ThemeToggle';
 import { OAuthButton } from '../components/OAuthButton';
 
 export const LoginPage: React.FC = () => {
@@ -71,12 +69,6 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 px-4">
-      {/* Top Right Actions */}
-      <div className="absolute top-4 right-4 flex items-center gap-2">
-        <LanguageSelector />
-        <ThemeToggle />
-      </div>
-
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
