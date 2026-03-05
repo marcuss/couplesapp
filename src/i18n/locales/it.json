@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "CouplePlan",
+    "appName": "LoveCompass",
     "loading": "Caricamento...",
     "save": "Salva",
     "cancel": "Annulla",
@@ -228,7 +228,7 @@
   },
   "invitation": {
     "title": "Sei Stato Invitato!",
-    "subtitle": "{{name}} vuole connettersi con te su CouplePlan",
+    "subtitle": "{{name}} vuole connettersi con te su LoveCompass",
     "acceptInvitation": "Accetta Invito",
     "declineInvitation": "Rifiuta",
     "createAccount": "Crea Account per Accettare",
@@ -239,7 +239,7 @@
     "expired": "Questo invito è scaduto",
     "wrongEmail": "Questo invito è stato inviato a un indirizzo email diverso",
     "acceptSuccess": "Invito accettato con successo!",
-    "welcomeMessage": "Benvenuto su CouplePlan! Ora sei connesso con {{name}}."
+    "welcomeMessage": "Benvenuto su LoveCompass! Ora sei connesso con {{name}}."
   },
   "settings": {
     "title": "Impostazioni",
@@ -264,10 +264,10 @@
     "deleteConfirm": "Sei sicuro? Questa azione non può essere annullata."
   },
   "email": {
-    "invitationSubject": "Sei stato invitato a unirti a CouplePlan!",
-    "invitationBody": "Ciao!\n\n{{inviterName}} ti ha invitato a unirti a CouplePlan - l'app per le coppie che pianificano la loro vita insieme.\n\nClicca sul link qui sotto per accettare l'invito e creare il tuo account:\n\n{{invitationUrl}}\n\nQuesto invito scadrà tra 7 giorni.\n\nCon amore,\nIl Team CouplePlan",
-    "welcomeSubject": "Benvenuto su CouplePlan!",
-    "welcomeBody": "Ciao {{name}},\n\nBenvenuto su CouplePlan! Siamo felici di averti a bordo.\n\nInizia a pianificare la tua vita insieme al tuo partner:\n- Crea eventi condivisi\n- Imposta obiettivi di coppia\n- Gestisci il tuo budget\n- Tieni traccia dei compiti\n\nInizia ora: {{appUrl}}\n\nCon amore,\nIl Team CouplePlan"
+    "invitationSubject": "Sei stato invitato a unirti a LoveCompass!",
+    "invitationBody": "Ciao!\n\n{{inviterName}} ti ha invitato a unirti a LoveCompass - l'app per le coppie che pianificano la loro vita insieme.\n\nClicca sul link qui sotto per accettare l'invito e creare il tuo account:\n\n{{invitationUrl}}\n\nQuesto invito scadrà tra 7 giorni.\n\nCon amore,\nIl Team LoveCompass",
+    "welcomeSubject": "Benvenuto su LoveCompass!",
+    "welcomeBody": "Ciao {{name}},\n\nBenvenuto su LoveCompass! Siamo felici di averti a bordo.\n\nInizia a pianificare la tua vita insieme al tuo partner:\n- Crea eventi condivisi\n- Imposta obiettivi di coppia\n- Gestisci il tuo budget\n- Tieni traccia dei compiti\n\nInizia ora: {{appUrl}}\n\nCon amore,\nIl Team LoveCompass"
   },
   "errors": {
     "generic": "Qualcosa è andato storto. Riprova.",

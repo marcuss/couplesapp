@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "CouplePlan",
+    "appName": "LoveCompass",
     "loading": "加载中...",
     "save": "保存",
     "cancel": "取消",
@@ -228,7 +228,7 @@
   },
   "invitation": {
     "title": "你被邀请了！",
-    "subtitle": "{{name}}想在CouplePlan上与你连接",
+    "subtitle": "{{name}}想在LoveCompass上与你连接",
     "acceptInvitation": "接受邀请",
     "declineInvitation": "拒绝",
     "createAccount": "创建账户接受",
@@ -239,7 +239,7 @@
     "expired": "此邀请已过期",
     "wrongEmail": "此邀请发送到了其他邮箱地址",
     "acceptSuccess": "邀请接受成功！",
-    "welcomeMessage": "欢迎来到CouplePlan！你现在已与{{name}}连接。"
+    "welcomeMessage": "欢迎来到LoveCompass！你现在已与{{name}}连接。"
   },
   "settings": {
     "title": "设置",
@@ -264,10 +264,10 @@
     "deleteConfirm": "确定吗？此操作无法撤销。"
   },
   "email": {
-    "invitationSubject": "你被邀请加入CouplePlan！",
-    "invitationBody": "你好！\n\n{{inviterName}}邀请你加入CouplePlan——情侣共同规划生活的应用。\n\n点击以下链接接受邀请并创建账户：\n\n{{invitationUrl}}\n\n此邀请将在7天后过期。\n\n爱你的，\nCouplePlan团队",
-    "welcomeSubject": "欢迎来到CouplePlan！",
-    "welcomeBody": "你好{{name}}，\n\n欢迎来到CouplePlan！很高兴有你加入。\n\n开始与伴侣规划你们的生活：\n- 创建共享活动\n- 设定伴侣目标\n- 管理预算\n- 追踪任务\n\n立即开始：{{appUrl}}\n\n爱你的，\nCouplePlan团队"
+    "invitationSubject": "你被邀请加入LoveCompass！",
+    "invitationBody": "你好！\n\n{{inviterName}}邀请你加入LoveCompass——情侣共同规划生活的应用。\n\n点击以下链接接受邀请并创建账户：\n\n{{invitationUrl}}\n\n此邀请将在7天后过期。\n\n爱你的，\nLoveCompass团队",
+    "welcomeSubject": "欢迎来到LoveCompass！",
+    "welcomeBody": "你好{{name}}，\n\n欢迎来到LoveCompass！很高兴有你加入。\n\n开始与伴侣规划你们的生活：\n- 创建共享活动\n- 设定伴侣目标\n- 管理预算\n- 追踪任务\n\n立即开始：{{appUrl}}\n\n爱你的，\nLoveCompass团队"
   },
   "errors": {
     "generic": "出了点问题。请重试。",

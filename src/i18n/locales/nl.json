@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "CouplePlan",
+    "appName": "LoveCompass",
     "loading": "Laden...",
     "save": "Opslaan",
     "cancel": "Annuleren",
@@ -228,7 +228,7 @@
   },
   "invitation": {
     "title": "Je Bent Uitgenodigd!",
-    "subtitle": "{{name}} wil met je verbinden op CouplePlan",
+    "subtitle": "{{name}} wil met je verbinden op LoveCompass",
     "acceptInvitation": "Uitnodiging Accepteren",
     "declineInvitation": "Afwijzen",
     "createAccount": "Account Maken om te Accepteren",
@@ -239,7 +239,7 @@
     "expired": "Deze uitnodiging is verlopen",
     "wrongEmail": "Deze uitnodiging is naar een ander e-mailadres gestuurd",
     "acceptSuccess": "Uitnodiging succesvol geaccepteerd!",
-    "welcomeMessage": "Welkom bij CouplePlan! Je bent nu verbonden met {{name}}."
+    "welcomeMessage": "Welkom bij LoveCompass! Je bent nu verbonden met {{name}}."
   },
   "settings": {
     "title": "Instellingen",
@@ -264,10 +264,10 @@
     "deleteConfirm": "Weet je het zeker? Deze actie kan niet ongedaan worden gemaakt."
   },
   "email": {
-    "invitationSubject": "Je bent uitgenodigd om lid te worden van CouplePlan!",
-    "invitationBody": "Hallo!\n\n{{inviterName}} heeft je uitgenodigd om lid te worden van CouplePlan - de app voor koppels om hun leven samen te plannen.\n\nKlik op de link hieronder om de uitnodiging te accepteren en je account aan te maken:\n\n{{invitationUrl}}\n\nDeze uitnodiging verloopt over 7 dagen.\n\nMet liefde,\nHet CouplePlan Team",
-    "welcomeSubject": "Welkom bij CouplePlan!",
-    "welcomeBody": "Hallo {{name}},\n\nWelkom bij CouplePlan! We zijn blij dat je erbij bent.\n\nBegin met het plannen van je leven samen met je partner:\n- Gedeelde evenementen maken\n- Koppeldoelen stellen\n- Je budget beheren\n- Taken volgen\n\nBegin nu: {{appUrl}}\n\nMet liefde,\nHet CouplePlan Team"
+    "invitationSubject": "Je bent uitgenodigd om lid te worden van LoveCompass!",
+    "invitationBody": "Hallo!\n\n{{inviterName}} heeft je uitgenodigd om lid te worden van LoveCompass - de app voor koppels om hun leven samen te plannen.\n\nKlik op de link hieronder om de uitnodiging te accepteren en je account aan te maken:\n\n{{invitationUrl}}\n\nDeze uitnodiging verloopt over 7 dagen.\n\nMet liefde,\nHet LoveCompass Team",
+    "welcomeSubject": "Welkom bij LoveCompass!",
+    "welcomeBody": "Hallo {{name}},\n\nWelkom bij LoveCompass! We zijn blij dat je erbij bent.\n\nBegin met het plannen van je leven samen met je partner:\n- Gedeelde evenementen maken\n- Koppeldoelen stellen\n- Je budget beheren\n- Taken volgen\n\nBegin nu: {{appUrl}}\n\nMet liefde,\nHet LoveCompass Team"
   },
   "errors": {
     "generic": "Er is iets misgegaan. Probeer het opnieuw.",
