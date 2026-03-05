@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-
+// import { User } from '../domain/entities/User'; // Reserved for future use
 
 interface AuthUser {
   id: string;
