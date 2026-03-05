@@ -13,6 +13,12 @@ interface AuthContextType {
   acceptInvitation: (token: string, password: string, name: string) => Promise<{ error: Error | null }>;
   invitePartner: (email: string) => Promise<{ error: Error | null; data?: { token: string; invitationUrl: string } }>;
   disconnectPartner: () => Promise<{ error: Error | null }>;
+  /** Initiate Google OAuth flow (redirects browser to Google) */
+  signInWithGoogle: () => Promise<{ error: Error | null }>;
+  /** Initiate Apple OAuth flow (redirects browser to Apple) */
+  signInWithApple: () => Promise<{ error: Error | null }>;
+  /** Handle the OAuth redirect callback, parse session, load profile */
+  handleOAuthCallback: (url?: string) => Promise<{ error: Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -304,6 +310,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, partner]);
 
+  const signInWithGoogle = useCallback(async () => {
+    try {
+      const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${appUrl}/auth/callback`,
+          scopes: 'email profile',
+        },
+      });
+      return { error: error as Error | null };
+    } catch (error) {
+      return { error: error as Error };
+    }
+  }, []);
+
+  const signInWithApple = useCallback(async () => {
+    try {
+      const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${appUrl}/auth/callback`,
+        },
+      });
+      return { error: error as Error | null };
+    } catch (error) {
+      return { error: error as Error };
+    }
+  }, []);
+
+  const handleOAuthCallback = useCallback(async (_url?: string) => {
+    try {
+      // Supabase with detectSessionInUrl:true already parsed the URL.
+      // Just fetch the current session and load the profile.
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) return { error: sessionError as Error };
+      if (!sessionData?.session?.user) {
+        return { error: new Error('No valid session in OAuth callback') };
+      }
+      await loadUserProfile(sessionData.session.user.id);
+      return { error: null };
+    } catch (error) {
+      return { error: error as Error };
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -316,6 +369,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         acceptInvitation,
         invitePartner,
         disconnectPartner,
+        signInWithGoogle,
+        signInWithApple,
+        handleOAuthCallback,
       }}
     >
       {children}

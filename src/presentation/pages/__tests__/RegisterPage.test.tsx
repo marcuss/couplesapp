@@ -23,8 +23,15 @@ const mockRegister = vi.fn();
 vi.mock('../../../contexts/AuthContext', () => ({
   useAuth: () => ({
     register: mockRegister,
+    signInWithGoogle: vi.fn().mockResolvedValue({ error: null }),
+    signInWithApple: vi.fn().mockResolvedValue({ error: null }),
     user: null,
   }),
+}));
+
+vi.mock('../../components/OAuthButton', () => ({
+  OAuthButton: ({ provider, onClick }: { provider: string; onClick: () => void }) =>
+    React.createElement('button', { 'data-testid': `oauth-${provider}`, onClick }, `Sign in with ${provider}`),
 }));
 
 vi.mock('../../components/LanguageSelector', () => ({
