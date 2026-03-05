@@ -245,24 +245,29 @@ export const RegisterPage: React.FC = () => {
 
               {/* Strength bar */}
               {strengthInfo && (
-                <div className="mt-2" data-testid="password-strength-bar">
+                <div className="mt-2" data-testid="password-strength-meter">
                   <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
                     <div className={`h-full rounded-full transition-all ${strengthInfo.color} ${strengthInfo.width}`} />
                   </div>
-                  <p className={`text-xs mt-1 ${strengthInfo.textColor}`} data-testid="password-strength-label">
+                  <p className={`text-xs mt-1 ${strengthInfo.textColor}`} data-testid="strength-label">
                     {strengthInfo.label}
                   </p>
                 </div>
               )}
 
               {/* Requirements */}
+              {passwordTouched && !isPasswordValid && passwordValidation.errors[0] && (
+                <p className="text-xs mt-1 text-red-600 dark:text-red-400" data-testid="password-inline-error">
+                  {passwordValidation.errors[0]}
+                </p>
+              )}
               {passwordTouched && (
                 <ul className="mt-2 space-y-1" data-testid="password-requirements">
-                  <Requirement met={passwordValidation.rules.minLength} label="At least 8 characters" />
-                  <Requirement met={passwordValidation.rules.hasUppercase} label="One uppercase letter" />
-                  <Requirement met={passwordValidation.rules.hasLowercase} label="One lowercase letter" />
-                  <Requirement met={passwordValidation.rules.hasNumber} label="One number" />
-                  <Requirement met={passwordValidation.rules.hasSpecial} label="One special character" />
+                  <Requirement met={passwordValidation.checks.minLength} label="At least 8 characters" />
+                  <Requirement met={passwordValidation.checks.hasUpperCase} label="One uppercase letter" />
+                  <Requirement met={passwordValidation.checks.hasLowerCase} label="One lowercase letter" />
+                  <Requirement met={passwordValidation.checks.hasNumber} label="One number" />
+                  <Requirement met={passwordValidation.checks.hasSpecialChar} label="One special character" />
                 </ul>
               )}
             </div>
