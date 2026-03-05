@@ -17,7 +17,7 @@ export const InvitePartnerPage: React.FC = () => {
   const { user } = useAuth();
   const { i18n } = useTranslation();
   const [email, setEmail] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>(i18n.language as LanguageCode || 'en');
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>((i18n.language?.split('-')[0] as LanguageCode) || 'en');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
