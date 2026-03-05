@@ -16,6 +16,7 @@ import { SupabaseGoalService } from './services/SupabaseGoalService';
 import { SupabaseTaskService } from './services/SupabaseTaskService';
 import { SupabaseEventService } from './services/SupabaseEventService';
 import { SupabaseBudgetService } from './services/SupabaseBudgetService';
+import { SupabaseDailyQuestionService } from './services/SupabaseDailyQuestionService';
 
 export const container: Services = {
   dashboardService: new SupabaseDashboardService(),
@@ -23,4 +24,5 @@ export const container: Services = {
   taskService: new SupabaseTaskService(),
   eventService: new SupabaseEventService(),
   budgetService: new SupabaseBudgetService(),
+  dailyQuestionService: new SupabaseDailyQuestionService(),
 };

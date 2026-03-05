@@ -50,6 +50,10 @@ function createMockServices(goalService: IGoalService): Services {
     taskService: {} as ITaskService,
     eventService: {} as IEventService,
     budgetService: {} as IBudgetService,
+    dailyQuestionService: {
+      loadTodayData: vi.fn().mockResolvedValue({ question: null, myAnswer: null, partnerAnswer: null, bothAnswered: false, isLoading: false, error: null }),
+      submitAnswer: vi.fn().mockResolvedValue({ ok: true }),
+    },
   };
 }
 
