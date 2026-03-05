@@ -7,6 +7,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { DateIdeasWidget } from '../DateIdeasWidget';
 
+// ── Mock Supabase (required to prevent supabaseUrl init error) ───────────────
+vi.mock('../../../lib/supabase', () => ({
+  supabase: {
+    from: vi.fn().mockReturnValue({ select: vi.fn(), insert: vi.fn(), upsert: vi.fn() }),
+    functions: { invoke: vi.fn().mockResolvedValue({ error: null }) },
+  },
+}));
+
 // ── Mock hook ────────────────────────────────────────────────────────────────
 vi.mock('../../../hooks/useDateIdeas');
 import { useDateIdeas } from '../../../hooks/useDateIdeas';

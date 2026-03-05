@@ -1,12 +1,15 @@
 /**
  * GetDateIdeasUseCase
  * Retrieves date ideas for the user's city for today.
- * Falls back to generating via OpenAI when not yet cached in the DB.
+ * Falls back to calling the Edge Function when not yet cached in the DB.
+ *
+ * Note: The client-side OpenAI fallback was removed because VITE_OPENAI_API_KEY
+ * is intentionally not exposed in the frontend for security reasons.
+ * The Edge Function `generate-date-ideas` handles generation server-side.
  */
 
 import { DateIdeas } from '../../../domain/entities/DateIdea';
 import { IDateIdeasRepository } from '../../../domain/repositories/IDateIdeasRepository';
-import { generateDateIdeasForCity } from '../../../services/dateIdeasService';
 import { supabase } from '../../../lib/supabase';
 
 export interface GetDateIdeasInput {
@@ -24,36 +27,23 @@ export class GetDateIdeasUseCase {
     const cached = await this.repo.getIdeasForCity(city, date);
     if (cached) return cached;
 
-    // 2. Generate on-the-fly via OpenAI and store in DB
+    // 2. Not in DB → trigger the Edge Function to generate ideas server-side.
+    //    The Edge Function has the OpenAI key and stores results in date_ideas.
     try {
-      const generated = await generateDateIdeasForCity(city, date);
+      const { error: fnError } = await supabase.functions.invoke('generate-date-ideas', {
+        body: { cities: [city] },
+      });
 
-      // Upsert into date_ideas (fire-and-forget errors for UX)
-      supabase
-        .from('date_ideas')
-        .upsert(
-          {
-            city,
-            date,
-            ideas: generated,
-            generated_at: new Date().toISOString(),
-          },
-          { onConflict: 'city,date' }
-        )
-        .then(({ error }) => {
-          if (error) console.warn('Could not cache date ideas:', error.message);
-        });
+      if (fnError) {
+        console.error('GetDateIdeasUseCase: edge function error', fnError);
+        return null;
+      }
 
-      return {
-        id: `generated-${city}-${date}`,
-        city,
-        date,
-        ideas: generated.ideas,
-        cityNote: generated.cityNote,
-        generatedAt: new Date().toISOString(),
-      };
+      // 3. Re-fetch now that the Edge Function has populated the DB
+      const generated = await this.repo.getIdeasForCity(city, date);
+      return generated;
     } catch (err) {
-      console.error('GetDateIdeasUseCase: failed to generate ideas', err);
+      console.error('GetDateIdeasUseCase: failed to generate ideas via edge function', err);
       return null;
     }
   }
