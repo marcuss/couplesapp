@@ -1,27 +1,27 @@
 import { test, expect } from '@playwright/test';
 
+// Auth state is pre-loaded via storageState from global-setup.ts
 test.describe('Tasks', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByTestId('login-email').fill('test@example.com');
-    await page.getByTestId('login-password').fill('password123');
-    await page.getByTestId('login-submit').click();
-    await page.waitForURL('/dashboard');
     await page.goto('/tasks');
+    await page.waitForURL(/\/(tasks|login)/, { timeout: 10000 });
   });
 
   test('should display tasks page', async ({ page }) => {
+    await expect(page).toHaveURL(/.*tasks/);
     await expect(page.getByText(/tasks/i)).toBeVisible();
     await expect(page.getByTestId('add-task-button')).toBeVisible();
   });
 
   test('should open add task modal', async ({ page }) => {
+    await expect(page).toHaveURL(/.*tasks/);
     await page.getByTestId('add-task-button').click();
     await expect(page.getByText(/add new task/i)).toBeVisible();
     await expect(page.getByLabel(/title/i)).toBeVisible();
   });
 
   test('should add a new task', async ({ page }) => {
+    await expect(page).toHaveURL(/.*tasks/);
     await page.getByTestId('add-task-button').click();
     
     await page.getByLabel(/title/i).fill('Test Task');

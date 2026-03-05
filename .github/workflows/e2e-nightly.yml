@@ -37,12 +37,20 @@ jobs:
       - name: Install Playwright (${{ matrix.browser }})
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
+      - name: Create auth state dir
+        run: mkdir -p e2e/.auth
+
       - name: Run E2E tests (${{ matrix.browser }})
         run: npx playwright test --project=${{ matrix.browser }}
         env:
+          # URL of the running app (webServer starts it if not set)
           BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:5173' }}
+          # Supabase config — needed by both webServer (vite dev) and global-setup
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          # Test user credentials — create this user in Supabase dev once
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
 
       - name: Upload report (${{ matrix.browser }})
         uses: actions/upload-artifact@v4

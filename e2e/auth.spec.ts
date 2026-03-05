@@ -32,10 +32,13 @@ test.describe('Authentication', () => {
   test('should navigate between login and register', async ({ page }) => {
     await page.goto('/login');
     
-    await page.getByText(/sign up/i).click();
+    // PR #17 moved ThemeToggle/LanguageSelector to ProfilePage.
+    // The register link on login page shows "Register" (t('auth.register')), not "Sign up"
+    await page.getByRole('link', { name: /register/i }).click();
     await expect(page).toHaveURL(/.*register/);
     
-    await page.getByText(/sign in/i).click();
+    // The login link on register page shows "Login" (t('auth.login')), not "Sign in"
+    await page.getByRole('link', { name: /login/i }).click();
     await expect(page).toHaveURL(/.*login/);
   });
 });
