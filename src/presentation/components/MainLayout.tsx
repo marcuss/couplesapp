@@ -19,8 +19,6 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
-import { LanguageSelector } from './LanguageSelector';
-import { ThemeToggle } from './ThemeToggle';
 
 export const MainLayout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -77,12 +75,6 @@ export const MainLayout: React.FC = () => {
 
             {/* Right Actions */}
             <div className="flex items-center space-x-1">
-              {/* Language Selector */}
-              <LanguageSelector />
-
-              {/* Theme Toggle */}
-              <ThemeToggle />
-
               {/* User Info / Profile Link */}
               <button
                 onClick={() => navigate('/profile')}
