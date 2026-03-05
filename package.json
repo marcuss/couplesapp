@@ -14,7 +14,9 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "gen-types": "supabase gen types typescript --project-id klpshxvjzsdqolkrabvb --schema public > src/types/database.types.ts",
+    "gen-types:check": "supabase gen types typescript --project-id klpshxvjzsdqolkrabvb --schema public | diff src/types/database.types.ts - && echo \"Types are up to date\" || (echo \"ERROR: Types are out of date. Run npm run gen-types\" && exit 1)"
   },
   "dependencies": {
     "@capacitor/core": "^8.1.0",
