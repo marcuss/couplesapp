@@ -69,4 +69,4 @@ jobs:
         run: |
           DATE=$(date -u +%Y-%m-%d)
           aws s3 sync playwright-report/ s3://couplesapp-e2e-reports/${DATE}/${{ matrix.browser }}/ --delete
-          echo "Report available at: http://couplesapp-e2e-reports.s3-website-us-east-1.amazonaws.com/${DATE}/${{ matrix.browser }}/index.html"
+          echo "Report available at: https://d1ej7mofi8sf.cloudfront.net/${DATE}/${{ matrix.browser }}/index.html"
