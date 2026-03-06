@@ -284,6 +284,8 @@ export const EventsPage: React.FC = () => {
                   onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   placeholder="e.g., Date Night"
+                  aria-label="Title"
+                  data-testid="event-title-input"
                   required
                 />
               </div>
@@ -297,6 +299,8 @@ export const EventsPage: React.FC = () => {
                   onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   placeholder="Optional description"
+                  aria-label="Description"
+                  data-testid="event-description-input"
                   rows={2}
                 />
               </div>
@@ -311,6 +315,8 @@ export const EventsPage: React.FC = () => {
                     value={newEvent.date}
                     onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    aria-label="Date"
+                    data-testid="event-date-input"
                     required
                   />
                 </div>
@@ -323,6 +329,8 @@ export const EventsPage: React.FC = () => {
                     value={newEvent.time}
                     onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    aria-label="Time"
+                    data-testid="event-time-input"
                   />
                 </div>
               </div>

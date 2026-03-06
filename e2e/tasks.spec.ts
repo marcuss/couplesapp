@@ -9,14 +9,14 @@ test.describe('Tasks', () => {
 
   test('should display tasks page', async ({ page }) => {
     await expect(page).toHaveURL(/.*tasks/);
-    await expect(page.getByText(/tasks/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /tasks/i })).toBeVisible();
     await expect(page.getByTestId('add-task-button')).toBeVisible();
   });
 
   test('should open add task modal', async ({ page }) => {
     await expect(page).toHaveURL(/.*tasks/);
     await page.getByTestId('add-task-button').click();
-    await expect(page.getByText(/add new task/i)).toBeVisible();
+    await expect(page.getByText(/add task/i)).toBeVisible();
     await expect(page.getByLabel(/title/i)).toBeVisible();
   });
 
