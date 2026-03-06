@@ -256,6 +256,8 @@ export const TasksPage: React.FC = () => {
                   onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   placeholder={t('tasks.taskTitle')}
+                  aria-label="Title"
+                  data-testid="task-title-input"
                   required
                 />
               </div>
@@ -269,6 +271,8 @@ export const TasksPage: React.FC = () => {
                   onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   placeholder={t('common.description')}
+                  aria-label="Description"
+                  data-testid="task-description-input"
                   rows={2}
                 />
               </div>
