@@ -46,7 +46,10 @@
     "loginError": "Correo o contraseña inválidos",
     "registerError": "Error al crear la cuenta",
     "passwordMismatch": "Las contraseñas no coinciden",
-    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres"
+    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+    "namePlaceholder": "Tu nombre",
+    "emailPlaceholder": "tu@correo.com",
+    "checkEmail": "Te enviamos un correo de confirmación. Por favor revisa tu bandeja de entrada para completar el registro."
   },
   "navigation": {
     "dashboard": "Panel",
@@ -277,5 +280,6 @@
     "validation": "Por favor verifica tu entrada e intenta de nuevo.",
     "database": "Error de base de datos. Por favor intenta más tarde.",
     "rls": "Permiso denegado. Por favor contacta soporte."
-  }
+  },
+  "success": "¡Revisa tu Correo!"
 }

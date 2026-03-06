@@ -46,7 +46,10 @@
     "loginError": "Ongeldig e-mailadres of wachtwoord",
     "registerError": "Account aanmaken mislukt",
     "passwordMismatch": "Wachtwoorden komen niet overeen",
-    "passwordTooShort": "Wachtwoord moet minimaal 6 tekens bevatten"
+    "passwordTooShort": "Wachtwoord moet minimaal 6 tekens bevatten",
+    "namePlaceholder": "Uw naam",
+    "emailPlaceholder": "uw@email.com",
+    "checkEmail": "We hebben u een bevestigingsmail gestuurd. Controleer uw inbox om de registratie te voltooien."
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -277,5 +280,6 @@
     "validation": "Controleer je invoer en probeer het opnieuw.",
     "database": "Databasefout. Probeer het later opnieuw.",
     "rls": "Toestemming geweigerd. Neem contact op met ondersteuning."
-  }
+  },
+  "success": "Controleer uw e-mail!"
 }

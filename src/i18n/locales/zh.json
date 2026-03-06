@@ -46,7 +46,10 @@
     "loginError": "邮箱或密码无效",
     "registerError": "创建账户失败",
     "passwordMismatch": "密码不匹配",
-    "passwordTooShort": "密码至少需要6个字符"
+    "passwordTooShort": "密码至少需要6个字符",
+    "namePlaceholder": "您的姓名",
+    "emailPlaceholder": "your@email.com",
+    "checkEmail": "我们已向您发送确认邮件。请查看您的收件箱以完成注册。"
   },
   "navigation": {
     "dashboard": "仪表盘",
@@ -277,5 +280,6 @@
     "validation": "请检查输入后重试。",
     "database": "数据库错误。请稍后重试。",
     "rls": "权限被拒绝。请联系支持。"
-  }
+  },
+  "success": "请查看您的邮箱！"
 }
