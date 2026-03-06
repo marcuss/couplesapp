@@ -16,6 +16,7 @@ export interface User {
   email: string;
   name?: string;
   partnerId?: string;
+  coupleId?: string;
   createdAt?: string;
 }
 
