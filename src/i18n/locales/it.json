@@ -46,7 +46,10 @@
     "loginError": "Email o password non validi",
     "registerError": "Creazione account fallita",
     "passwordMismatch": "Le password non corrispondono",
-    "passwordTooShort": "La password deve contenere almeno 6 caratteri"
+    "passwordTooShort": "La password deve contenere almeno 6 caratteri",
+    "namePlaceholder": "Il tuo nome",
+    "emailPlaceholder": "tua@email.com",
+    "checkEmail": "Ti abbiamo inviato un'email di conferma. Controlla la tua casella di posta per completare la registrazione."
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -277,5 +280,6 @@
     "validation": "Controlla il tuo input e riprova.",
     "database": "Errore del database. Riprova più tardi.",
     "rls": "Permesso negato. Contatta il supporto."
-  }
+  },
+  "success": "Controlla la tua email!"
 }

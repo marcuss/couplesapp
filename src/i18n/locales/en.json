@@ -46,7 +46,10 @@
     "loginError": "Invalid email or password",
     "registerError": "Failed to create account",
     "passwordMismatch": "Passwords do not match",
-    "passwordTooShort": "Password must be at least 6 characters"
+    "passwordTooShort": "Password must be at least 6 characters",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "your@email.com",
+    "checkEmail": "We sent you a confirmation email. Please check your inbox to complete registration."
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -277,5 +280,6 @@
     "validation": "Please check your input and try again.",
     "database": "Database error. Please try again later.",
     "rls": "Permission denied. Please contact support."
-  }
+  },
+  "success": "Check Your Email!"
 }
