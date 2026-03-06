@@ -74,11 +74,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (profile) {
+        // Buscar coupleId si el usuario tiene pareja
+        let coupleId: string | undefined;
+        if (profile.partner_id) {
+          const { data: coupleData } = await supabase
+            .from('couples')
+            .select('id')
+            .or(`partner1_id.eq.${userId},partner2_id.eq.${userId}`)
+            .single();
+          coupleId = coupleData?.id ?? undefined;
+        }
+
         setUser({
           id: profile.id,
           email: profile.email,
           name: profile.name || undefined,
           partnerId: profile.partner_id || undefined,
+          coupleId,
         });
 
         // Load partner if exists
