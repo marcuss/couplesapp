@@ -25,6 +25,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useServices } from '../../contexts/ServiceContext';
 import { DateIdeasWidget } from '../../components/dating-ideas/DateIdeasWidget';
+import { DailyQuestionWidget } from '../components/DailyQuestionWidget';
 import { CalendarEvent, Goal, Budget, Task } from '../../types';
 
 interface DashboardStats {
@@ -189,6 +190,9 @@ export const DashboardPage: React.FC = () => {
           </p>
         )}
       </div>
+
+      {/* Daily Question Widget — first widget above all others */}
+      <DailyQuestionWidget coupleId={(user as unknown as { coupleId?: string })?.coupleId} />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
