@@ -211,6 +211,7 @@ export const EventsPage: React.FC = () => {
                   onClick={() => handleDeleteEvent(event.id)}
                   className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                   title="Delete event"
+                  data-testid="delete-event-button"
                 >
                   <X className="w-5 h-5" />
                 </button>

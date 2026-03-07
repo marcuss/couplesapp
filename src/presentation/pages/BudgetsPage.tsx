@@ -258,6 +258,7 @@ export const BudgetsPage: React.FC = () => {
                       <button
                         onClick={() => handleDeleteBudget(budget.id)}
                         className="text-gray-400 hover:text-red-500 transition-colors"
+                        data-testid="delete-budget-button"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -318,6 +319,7 @@ export const BudgetsPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   placeholder={t('budgets.categoryPlaceholder')}
                   required
+                  data-testid="budget-category-input"
                 />
               </div>
 
@@ -334,6 +336,7 @@ export const BudgetsPage: React.FC = () => {
                   min="0"
                   step="0.01"
                   required
+                  data-testid="budget-amount-input"
                 />
               </div>
 
