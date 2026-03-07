@@ -30,7 +30,7 @@ test.describe('Events', () => {
     await page.getByLabel(/date/i).fill('2024-12-31');
     await page.getByLabel(/time/i).fill('18:00');
     
-    await page.getByRole('button', { name: /add event/i }).click();
+    await page.locator('form').getByRole('button', { name: /add event/i }).click();
     
     await expect(page.getByText('Test Event')).toBeVisible();
   });

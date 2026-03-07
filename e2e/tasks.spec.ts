@@ -16,7 +16,7 @@ test.describe('Tasks', () => {
   test('should open add task modal', async ({ page }) => {
     await expect(page).toHaveURL(/.*tasks/);
     await page.getByTestId('add-task-button').click();
-    await expect(page.getByText(/add task/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /add task/i })).toBeVisible();
     await expect(page.getByLabel(/title/i)).toBeVisible();
   });
 
@@ -27,7 +27,7 @@ test.describe('Tasks', () => {
     await page.getByLabel(/title/i).fill('Test Task');
     await page.getByLabel(/description/i).fill('Test Description');
     
-    await page.getByRole('button', { name: /add task/i }).click();
+    await page.locator('form').getByRole('button', { name: /add task/i }).click();
     
     await expect(page.getByText('Test Task')).toBeVisible();
   });
