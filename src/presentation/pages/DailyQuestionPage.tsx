@@ -94,7 +94,7 @@ export const DailyQuestionPage: React.FC = () => {
   const today = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-pink-50 dark:from-rose-950 dark:via-gray-900 dark:to-pink-950 px-4 py-6 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-pink-50 dark:from-rose-950 dark:via-gray-900 dark:to-pink-950 px-4 py-6 max-w-2xl mx-auto" data-testid="daily-question-page">
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <Link
@@ -140,7 +140,7 @@ export const DailyQuestionPage: React.FC = () => {
                 {DIFFICULTY_LABELS[state.question.difficulty] ?? 'Medium'}
               </span>
             </div>
-            <p className="text-xl font-bold text-gray-900 dark:text-white leading-relaxed">{questionText}</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-white leading-relaxed" data-testid="question-text">{questionText}</p>
           </div>
 
           {/* Unanswered — show form */}
@@ -160,6 +160,7 @@ export const DailyQuestionPage: React.FC = () => {
                   className="w-full rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-950/50 px-4 py-3 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 resize-none"
                   rows={5}
                   disabled={isSubmitting}
+                  data-testid="answer-textarea"
                 />
                 {submitError && (
                   <p className="text-sm text-red-500">{submitError}</p>
@@ -168,6 +169,7 @@ export const DailyQuestionPage: React.FC = () => {
                   type="submit"
                   disabled={isSubmitting || !answerText.trim()}
                   className="w-full bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl py-3 transition-colors flex items-center justify-center gap-2"
+                  data-testid="submit-answer-button"
                 >
                   {isSubmitting ? (
                     <><Loader2 className="w-4 h-4 animate-spin" />{t('dailyQuestion.submitting', 'Saving...')}</>
@@ -195,7 +197,7 @@ export const DailyQuestionPage: React.FC = () => {
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{state.myAnswer.answer}</p>
               </div>
 
-              <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-2xl p-6 flex items-center gap-4">
+              <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-2xl p-6 flex items-center gap-4" data-testid="waiting-for-partner">
                 <Clock className="w-8 h-8 text-amber-400 shrink-0" />
                 <div>
                   <p className="font-medium text-amber-800 dark:text-amber-200">
@@ -216,7 +218,7 @@ export const DailyQuestionPage: React.FC = () => {
           {/* Both answered — full reveal */}
           {state.bothAnswered && (
             <div className="space-y-4">
-              <div className="text-center py-2">
+              <div className="text-center py-2" data-testid="both-answered-banner">
                 <span className="text-2xl">🎉</span>
                 <p className="text-sm font-medium text-rose-600 dark:text-rose-400 mt-1">
                   {t('dailyQuestion.bothAnsweredBanner', 'You both answered! Here are your responses:')}

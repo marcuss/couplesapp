@@ -190,6 +190,7 @@ export const GoalsPage: React.FC = () => {
                   <button
                     onClick={() => handleCompleteGoal(goal.id)}
                     className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                    data-testid="complete-goal-button"
                   >
                     {t('goals.complete')}
                   </button>
@@ -197,6 +198,7 @@ export const GoalsPage: React.FC = () => {
                     onClick={() => handleDeleteGoal(goal.id)}
                     className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                     title={t('common.delete')}
+                    data-testid="delete-goal-button"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -262,6 +264,7 @@ export const GoalsPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   placeholder={t('goals.saveForVacation')}
                   required
+                  data-testid="goal-title-input"
                 />
               </div>
 
@@ -275,6 +278,7 @@ export const GoalsPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   placeholder={t('common.description')}
                   rows={2}
+                  data-testid="goal-description-input"
                 />
               </div>
 

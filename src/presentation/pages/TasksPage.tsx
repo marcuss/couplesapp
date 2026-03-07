@@ -189,6 +189,7 @@ export const TasksPage: React.FC = () => {
                   onClick={() => handleDeleteTask(task.id)}
                   className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                   title={t('common.delete')}
+                  data-testid="delete-task-button"
                 >
                   <X className="w-4 h-4" />
                 </button>
